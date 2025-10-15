@@ -106,9 +106,9 @@ h1, h2, h3, h4, h5, h6 {
 /* Background Pattern with STCOGA Logo */
 .page-background {
   min-height: 100vh;
-  background-image: 
-    linear-gradient(rgba(248, 250, 252, 0.97), rgba(248, 250, 252, 0.95)),
-    url('/assets/bg-image.jpeg');
+    background-image: 
+      linear-gradient(rgba(248, 250, 252, 0.97), rgba(248, 250, 252, 0.95)),
+      url('/assets/bg-image.jpeg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
