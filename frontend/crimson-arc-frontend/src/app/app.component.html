@@ -1,0 +1,48 @@
+<div class="container">
+  <header>
+    <h1>🔴 Crimson Arc</h1>
+    <p class="subtitle">Full-Stack Application</p>
+  </header>
+
+  <main>
+    <div class="card">
+      <h2>Welcome to Crimson Arc</h2>
+      <p>A modern full-stack application built with Angular and Node.js</p>
+      
+      <div class="tech-stack">
+        <div class="tech-item">
+          <h3>Frontend</h3>
+          <ul>
+            <li>Angular 18</li>
+            <li>TypeScript</li>
+            <li>Routing enabled</li>
+          </ul>
+        </div>
+        
+        <div class="tech-item">
+          <h3>Backend</h3>
+          <ul>
+            <li>Node.js</li>
+            <li>Express.js</li>
+            <li>REST API</li>
+          </ul>
+        </div>
+    </div>
+
+      <div class="actions">
+        <button class="btn-primary" (click)="testBackend()">Test Backend Connection</button>
+      </div>
+
+      <div *ngIf="backendResponse" class="response">
+        <h3>Backend Response:</h3>
+        <pre>{{ backendResponse | json }}</pre>
+    </div>
+  </div>
+</main>
+
+  <footer>
+    <p>Built with ❤️ using Angular & Express</p>
+  </footer>
+</div>
+
+<router-outlet />

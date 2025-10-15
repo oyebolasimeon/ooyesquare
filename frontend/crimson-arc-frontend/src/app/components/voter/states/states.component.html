@@ -1,0 +1,51 @@
+<div class="page-background">
+  <div class="page-content">
+    <div class="container">
+      <div class="header-section">
+        <button pButton icon="pi pi-arrow-left" (click)="goBack()" class="p-button-text" label="Back"></button>
+        <h1>Select Your State</h1>
+        <p class="subtitle">Choose your state to vote for state executive positions</p>
+      </div>
+
+      <!-- Search Box -->
+      <div class="search-section">
+        <span class="p-input-icon-left full-width">
+          <i class="pi pi-search"></i>
+          <input 
+            type="text" 
+            pInputText 
+            placeholder="Search states..." 
+            [(ngModel)]="searchTerm"
+            (input)="filterStates()"
+            class="full-width">
+        </span>
+      </div>
+
+      <!-- States Grid -->
+      <div *ngIf="loading" class="loading-spinner">
+        <i class="pi pi-spin pi-spinner" style="font-size: 3rem; color: #4F46E5;"></i>
+      </div>
+
+      <div *ngIf="!loading" class="states-grid">
+        <p-card 
+          *ngFor="let state of filteredStates"
+          class="state-card"
+          (click)="selectState(state)">
+          <div class="state-content">
+            <div class="state-icon">
+              <i class="pi pi-map-marker"></i>
+            </div>
+            <h3>{{ state }}</h3>
+            <button pButton icon="pi pi-arrow-right" class="p-button-text p-button-sm"></button>
+          </div>
+        </p-card>
+      </div>
+
+      <div *ngIf="!loading && filteredStates.length === 0" class="no-results">
+        <i class="pi pi-search" style="font-size: 3rem; color: #9CA3AF;"></i>
+        <p>No states found matching "{{ searchTerm }}"</p>
+      </div>
+    </div>
+  </div>
+</div>
+

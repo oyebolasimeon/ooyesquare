@@ -1,0 +1,363 @@
+/* Global Styles with STCOGA Theme */
+
+/* Import New Science Font (using similar web-safe alternative if not available) */
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* STCOGA Brand Colors from Logo */
+  --stcoga-blue: #1E40AF;           /* Shield blue */
+  --stcoga-blue-dark: #1E3A8A;      /* Darker blue */
+  --stcoga-blue-light: #3B82F6;     /* Lighter blue accent */
+  --stcoga-gold: #D4A574;            /* Border gold/brown */
+  --stcoga-gold-dark: #B8935A;       /* Darker gold */
+  --stcoga-brown: #8B7355;           /* Brown tones */
+  --stcoga-white: #F8FAFC;           /* Off-white from logo */
+  
+  /* Semantic Colors using STCOGA palette */
+  --primary-color: #1E40AF;          /* STCOGA Blue */
+  --primary-dark: #1E3A8A;
+  --secondary-color: #D4A574;         /* STCOGA Gold */
+  --secondary-dark: #B8935A;
+  --accent-color: #3B82F6;
+  --success-color: #059669;
+  --warning-color: #D97706;
+  --danger-color: #DC2626;
+  
+  /* Text Colors from STCOGA palette */
+  --text-primary: #1E3A8A;           /* Dark blue for headers */
+  --text-secondary: #64748B;         /* Muted blue-gray */
+  --text-light: #94A3B8;
+  --text-white: #F8FAFC;
+  
+  /* Background Colors */
+  --bg-light: #F8FAFC;
+  --bg-white: #FFFFFF;
+  --bg-gold-light: #FEF3E2;
+  --border-color: #E2E8F0;
+  
+  /* Font Family */
+  --font-family: 'Exo 2', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  color: var(--text-primary);
+  background: var(--bg-light);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Custom PrimeNG Overrides with STCOGA Theme */
+.p-button {
+  background: var(--stcoga-blue);
+  border-color: var(--stcoga-blue);
+  border-radius: 8px;
+  font-weight: 500;
+  font-family: var(--font-family);
+  transition: all 0.3s ease;
+}
+
+.p-button:hover {
+  background: var(--stcoga-blue-dark);
+  border-color: var(--stcoga-blue-dark);
+  transform: translateY(-1px);
+}
+
+.p-button-secondary {
+  background: var(--stcoga-gold);
+  border-color: var(--stcoga-gold);
+  color: var(--text-primary);
+}
+
+.p-button-secondary:hover {
+  background: var(--stcoga-gold-dark);
+  border-color: var(--stcoga-gold-dark);
+}
+
+.p-button-success {
+  background: var(--success-color);
+  border-color: var(--success-color);
+}
+
+.p-card {
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(30, 58, 138, 0.1), 0 1px 2px 0 rgba(30, 58, 138, 0.06);
+  border: 1px solid rgba(212, 165, 116, 0.1);
+  background: rgba(255, 255, 255, 0.98);
+}
+
+.p-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(30, 58, 138, 0.1), 0 4px 6px -2px rgba(30, 58, 138, 0.05);
+  border-color: rgba(212, 165, 116, 0.3);
+  transition: all 0.3s ease;
+}
+
+/* Background Pattern with STCOGA Logo */
+.page-background {
+  min-height: 100vh;
+  background-image: 
+    linear-gradient(rgba(248, 250, 252, 0.97), rgba(248, 250, 252, 0.95)),
+    url('/assets/bg-image.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  position: relative;
+}
+
+.page-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(30, 64, 175, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(212, 165, 116, 0.03) 0%, transparent 50%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.page-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Custom Card Styles with STCOGA Theme */
+.election-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.95));
+}
+
+.election-card:hover:not(.disabled) {
+  border-color: var(--stcoga-blue);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(30, 64, 175, 0.15);
+}
+
+.election-card.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: rgba(226, 232, 240, 0.5);
+}
+
+/* Profile Avatar with STCOGA Colors */
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--stcoga-blue);
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.2);
+}
+
+/* Badge Styles with STCOGA Colors */
+.voted-badge {
+  background: var(--success-color);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--font-family);
+}
+
+.status-badge {
+  font-family: var(--font-family);
+  font-weight: 600;
+}
+
+/* STCOGA Gradient Backgrounds */
+.gradient-blue {
+  background: linear-gradient(135deg, var(--stcoga-blue) 0%, var(--stcoga-blue-light) 100%);
+}
+
+.gradient-gold {
+  background: linear-gradient(135deg, var(--stcoga-gold) 0%, var(--stcoga-gold-dark) 100%);
+}
+
+/* Icon Colors from STCOGA */
+.icon-blue {
+  color: var(--stcoga-blue);
+}
+
+.icon-gold {
+  color: var(--stcoga-gold);
+}
+
+.icon-white {
+  color: var(--stcoga-white);
+}
+
+/* Chart Container */
+.chart-container {
+  position: relative;
+  height: 300px;
+  width: 100%;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .page-background {
+    background-attachment: scroll;
+  }
+}
+
+/* Loading Spinner with STCOGA Colors */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.loading-spinner i {
+  color: var(--stcoga-blue);
+  font-size: 3rem;
+}
+
+/* Error Message */
+.error-message {
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  color: #991B1B;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-family: var(--font-family);
+}
+
+/* Success Message */
+.success-message {
+  background: rgba(5, 150, 105, 0.1);
+  border: 1px solid rgba(5, 150, 105, 0.3);
+  color: #065F46;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-family: var(--font-family);
+}
+
+/* Custom Scrollbar with STCOGA Colors */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-light);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--stcoga-gold);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--stcoga-gold-dark);
+}
+
+/* PrimeNG Tag Colors */
+.p-tag-success {
+  background: var(--success-color);
+}
+
+.p-tag-warning {
+  background: var(--warning-color);
+}
+
+.p-tag-info {
+  background: var(--stcoga-blue);
+}
+
+/* Headers with STCOGA Styling */
+.header {
+  background: linear-gradient(135deg, var(--stcoga-blue) 0%, var(--stcoga-blue-dark) 100%);
+  color: var(--text-white);
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.15);
+}
+
+/* Buttons with PrimeIcons */
+.p-button .pi {
+  font-size: 1.1rem;
+}
+
+/* Cards with Subtle STCOGA Branding */
+.branded-card {
+  background: linear-gradient(to bottom right, 
+    rgba(255, 255, 255, 0.98), 
+    rgba(248, 250, 252, 0.95));
+  border-left: 4px solid var(--stcoga-gold);
+}
+
+.branded-card:hover {
+  border-left-color: var(--stcoga-blue);
+  box-shadow: 0 8px 16px rgba(30, 64, 175, 0.1);
+}
+
+/* Modal Overlays */
+.p-dialog {
+  font-family: var(--font-family);
+}
+
+.p-dialog .p-dialog-header {
+  background: linear-gradient(135deg, var(--stcoga-blue) 0%, var(--stcoga-blue-dark) 100%);
+  color: var(--text-white);
+}
+
+/* Input Focus States */
+.p-inputtext:focus {
+  border-color: var(--stcoga-blue);
+  box-shadow: 0 0 0 0.2rem rgba(30, 64, 175, 0.25);
+}
+
+/* Radio Button Styles */
+.p-radiobutton .p-radiobutton-box.p-highlight {
+  border-color: var(--stcoga-blue);
+  background: var(--stcoga-blue);
+}
+
+/* Footer with STCOGA Colors */
+footer {
+  background: linear-gradient(135deg, var(--stcoga-blue-dark) 0%, var(--stcoga-blue) 100%);
+  color: var(--text-white);
+  font-family: var(--font-family);
+}
+
+/* Utility Classes */
+.text-stcoga-blue {
+  color: var(--stcoga-blue);
+}
+
+.text-stcoga-gold {
+  color: var(--stcoga-gold);
+}
+
+.bg-stcoga-blue {
+  background-color: var(--stcoga-blue);
+}
+
+.bg-stcoga-gold {
+  background-color: var(--stcoga-gold);
+}
+
+/* Logo Text Styling */
+.logo-text {
+  font-family: var(--font-family);
+  font-weight: 700;
+  color: var(--stcoga-blue);
+  text-shadow: 1px 1px 2px rgba(212, 165, 116, 0.2);
+}

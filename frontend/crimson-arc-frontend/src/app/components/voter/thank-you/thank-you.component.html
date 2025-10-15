@@ -1,0 +1,64 @@
+<div class="page-background">
+  <div class="page-content">
+    <div class="container">
+      <div class="thank-you-section">
+        <div class="success-icon">
+          <i class="pi pi-check-circle"></i>
+        </div>
+        
+        <h1>Thank You for Voting!</h1>
+        <p class="subtitle">Your votes for {{ category }} elections have been successfully submitted</p>
+
+        <p-card class="info-card">
+          <div class="info-content">
+            <div class="info-item">
+              <i class="pi pi-shield"></i>
+              <div>
+                <h3>Your Vote is Secure</h3>
+                <p>Your votes have been encrypted and stored securely</p>
+              </div>
+            </div>
+            
+            <div class="info-item">
+              <i class="pi pi-lock"></i>
+              <div>
+                <h3>Cannot Be Changed</h3>
+                <p>Once submitted, votes cannot be modified or deleted</p>
+              </div>
+            </div>
+            
+            <div class="info-item">
+              <i class="pi pi-eye-slash"></i>
+              <div>
+                <h3>Completely Anonymous</h3>
+                <p>Your voting choices remain private and confidential</p>
+              </div>
+            </div>
+          </div>
+        </p-card>
+
+        <div class="action-buttons">
+          <button 
+            pButton 
+            label="Back to Categories" 
+            icon="pi pi-home"
+            class="p-button-lg"
+            (click)="goToCategories()">
+          </button>
+          <button 
+            pButton 
+            label="Logout" 
+            icon="pi pi-sign-out"
+            class="p-button-lg p-button-text"
+            (click)="logout()">
+          </button>
+        </div>
+
+        <div class="footer-message">
+          <p><i class="pi pi-info-circle"></i> Results will be announced after the election period ends</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
