@@ -1,0 +1,123 @@
+<div class="page-background">
+  <div class="page-content">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-content">
+        <div class="logo-section">
+          <button pButton icon="pi pi-arrow-left" (click)="goToDashboard()" class="p-button-text back-btn"></button>
+          <i class="pi pi-user" style="font-size: 2rem;"></i>
+          <span class="logo-text">Manage Voters</span>
+        </div>
+        <div class="user-section">
+          <button pButton icon="pi pi-sign-out" (click)="logout()" class="p-button-text logout-btn" label="Logout"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="voters-container">
+      <div class="toolbar">
+        <button pButton label="Upload Excel" icon="pi pi-upload" (click)="openUploadDialog()" class="add-btn"></button>
+      </div>
+
+      <!-- Voters Table -->
+      <p-card>
+        <p-table [value]="voters" [loading]="loading" [paginator]="true" [rows]="10" 
+                 responsiveLayout="scroll" styleClass="p-datatable-striped">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Email</th>
+              <th>Phone Number</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Maiden Name</th>
+              <th>Status</th>
+              <th>Has Voted</th>
+              <th>Actions</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-voter>
+            <tr>
+              <td>{{ voter.email }}</td>
+              <td>{{ voter.phoneNumber }}</td>
+              <td>{{ voter.firstName || '-' }}</td>
+              <td>{{ voter.lastName || '-' }}</td>
+              <td>{{ voter.maidenName || '-' }}</td>
+              <td>
+                <p-tag [value]="voter.isActive ? 'Active' : 'Inactive'" 
+                       [severity]="voter.isActive ? 'success' : 'danger'"></p-tag>
+              </td>
+              <td>
+                <p-tag [value]="voter.hasVoted ? 'Yes' : 'No'" 
+                       [severity]="voter.hasVoted ? 'info' : 'warn'"></p-tag>
+              </td>
+              <td>
+                <button pButton [icon]="voter.isActive ? 'pi pi-ban' : 'pi pi-check'" 
+                        (click)="toggleVoterStatus(voter)" 
+                        class="p-button-rounded p-button-text status-btn"></button>
+                <button pButton icon="pi pi-trash" (click)="deleteVoter(voter)" 
+                        class="p-button-rounded p-button-text delete-btn"></button>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="8" class="empty-message">
+                <div class="empty-state">
+                  <i class="pi pi-inbox" style="font-size: 3rem; color: #94A3B8;"></i>
+                  <p>No voters found. Upload an Excel file to add voters.</p>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-card>
+    </div>
+
+    <!-- Upload Dialog -->
+    <p-dialog [(visible)]="displayUploadDialog" header="Upload Voters from Excel" 
+              [modal]="true" [style]="{width: '600px'}" [draggable]="false" [resizable]="false">
+      <div class="upload-content">
+        <div class="info-box">
+          <h4><i class="pi pi-info-circle"></i> Excel Format Requirements</h4>
+          <p>Your Excel file should contain the following columns:</p>
+          <ul>
+            <li><strong>email</strong> - Voter's email address (required)</li>
+            <li><strong>phoneNumber</strong> - Phone number (required)</li>
+            <li><strong>firstName</strong> - First name (optional)</li>
+            <li><strong>lastName</strong> - Last name (optional)</li>
+            <li><strong>maidenName</strong> - Maiden name (optional)</li>
+          </ul>
+        </div>
+
+        <div class="upload-section">
+          <p-fileUpload 
+            mode="basic" 
+            chooseLabel="Choose File" 
+            accept=".xlsx,.xls" 
+            [maxFileSize]="5000000"
+            (onSelect)="onFileSelect($event)"
+            [auto]="false">
+          </p-fileUpload>
+          
+          <div class="selected-file" *ngIf="uploadedFile">
+            <i class="pi pi-file-excel"></i>
+            <span>{{ uploadedFile.name }}</span>
+          </div>
+        </div>
+      </div>
+
+      <ng-template pTemplate="footer">
+        <button pButton label="Cancel" icon="pi pi-times" (click)="hideUploadDialog()" class="p-button-text"></button>
+        <button pButton label="Upload" icon="pi pi-upload" (click)="uploadExcel()" class="save-btn" [disabled]="!uploadedFile"></button>
+      </ng-template>
+    </p-dialog>
+
+    <!-- Toast Messages -->
+    <p-toast></p-toast>
+
+    <!-- Confirmation Dialog -->
+    <p-confirmDialog></p-confirmDialog>
+  </div>
+</div>
+

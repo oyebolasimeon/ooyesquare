@@ -1,0 +1,102 @@
+<div class="page-background">
+  <div class="page-content">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-content">
+        <div class="logo-section">
+          <button pButton icon="pi pi-arrow-left" (click)="goToDashboard()" class="p-button-text back-btn"></button>
+          <i class="pi pi-cog" style="font-size: 2rem;"></i>
+          <span class="logo-text">Election Settings</span>
+        </div>
+        <div class="user-section">
+          <button pButton icon="pi pi-sign-out" (click)="logout()" class="p-button-text logout-btn" label="Logout"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="elections-container">
+      <div class="settings-card">
+        <p-card>
+          <ng-template pTemplate="header">
+            <div class="card-header">
+              <h2>Election Schedule</h2>
+              <div class="status-badge">
+                <span class="status-label">Status:</span>
+                <span [class]="'status-value ' + getStatusSeverity()">{{ getElectionStatus() }}</span>
+              </div>
+            </div>
+          </ng-template>
+
+          <div class="form-content">
+            <div class="form-row">
+              <div class="form-field">
+                <label for="startDate">Start Date & Time *</label>
+                <p-calendar 
+                  id="startDate" 
+                  [(ngModel)]="settings.startDate" 
+                  [showTime]="true" 
+                  [showSeconds]="false"
+                  [minDate]="minDate"
+                  dateFormat="dd/mm/yy"
+                  placeholder="Select start date and time"
+                  [disabled]="loading">
+                </p-calendar>
+              </div>
+
+              <div class="form-field">
+                <label for="endDate">End Date & Time *</label>
+                <p-calendar 
+                  id="endDate" 
+                  [(ngModel)]="settings.endDate" 
+                  [showTime]="true" 
+                  [showSeconds]="false"
+                  [minDate]="settings.startDate || minDate"
+                  dateFormat="dd/mm/yy"
+                  placeholder="Select end date and time"
+                  [disabled]="loading">
+                </p-calendar>
+              </div>
+            </div>
+
+            <div class="form-field switch-field">
+              <label for="isActive">
+                <i class="pi pi-power-off"></i>
+                Enable Election
+              </label>
+              <p-inputSwitch 
+                id="isActive" 
+                [(ngModel)]="settings.isActive"
+                [disabled]="loading">
+              </p-inputSwitch>
+            </div>
+
+            <div class="info-box">
+              <i class="pi pi-info-circle"></i>
+              <div>
+                <p><strong>Important:</strong></p>
+                <ul>
+                  <li>Voters can only vote when the election is active and within the scheduled time</li>
+                  <li>Make sure to configure positions and contestants before activating the election</li>
+                  <li>You can deactivate the election at any time using the toggle above</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button pButton label="Save Settings" icon="pi pi-check" 
+                      (click)="saveSettings()" 
+                      [loading]="saving"
+                      [disabled]="loading"
+                      class="save-btn"></button>
+            </div>
+          </div>
+        </p-card>
+      </div>
+    </div>
+
+    <!-- Toast Messages -->
+    <p-toast></p-toast>
+  </div>
+</div>
+

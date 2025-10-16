@@ -53,8 +53,10 @@ export class VotingComponent implements OnInit {
       next: (positions) => {
         this.positions = positions;
         positions.forEach(position => {
-          this.loadContestants(position._id);
-          this.expandedPositions[position._id] = false;
+          if (position._id) {
+            this.loadContestants(position._id);
+            this.expandedPositions[position._id] = false;
+          }
         });
         this.loading = false;
       },
@@ -65,7 +67,8 @@ export class VotingComponent implements OnInit {
     });
   }
 
-  loadContestants(positionId: string) {
+  loadContestants(positionId: string | undefined) {
+    if (!positionId) return;
     this.apiService.getContestants(positionId).subscribe({
       next: (contestants) => {
         this.contestants[positionId] = contestants;
@@ -76,15 +79,18 @@ export class VotingComponent implements OnInit {
     });
   }
 
-  togglePosition(positionId: string) {
+  togglePosition(positionId: string | undefined) {
+    if (!positionId) return;
     this.expandedPositions[positionId] = !this.expandedPositions[positionId];
   }
 
-  selectContestant(positionId: string, contestantId: string) {
+  selectContestant(positionId: string | undefined, contestantId: string | undefined) {
+    if (!positionId || !contestantId) return;
     this.selectedVotes[positionId] = contestantId;
   }
 
-  skipPosition(positionId: string) {
+  skipPosition(positionId: string | undefined) {
+    if (!positionId) return;
     this.selectedVotes[positionId] = null;
   }
 
@@ -96,7 +102,7 @@ export class VotingComponent implements OnInit {
 
   checkForEmptyVotes(): boolean {
     this.emptyPositions = this.positions.filter(p => 
-      this.selectedVotes[p._id] === undefined
+      p._id && this.selectedVotes[p._id] === undefined
     );
     return this.emptyPositions.length > 0;
   }
@@ -117,10 +123,12 @@ export class VotingComponent implements OnInit {
   finalSubmit() {
     this.submitting = true;
     
-    const votes: VoteSubmission[] = this.positions.map(position => ({
-      positionId: position._id,
-      contestantId: this.selectedVotes[position._id] || null
-    }));
+    const votes: VoteSubmission[] = this.positions
+      .filter(position => position._id) // Only include positions with IDs
+      .map(position => ({
+        positionId: position._id!,
+        contestantId: this.selectedVotes[position._id!] || null
+      }));
 
     this.apiService.submitVotes(votes, this.category, this.state).subscribe({
       next: () => {

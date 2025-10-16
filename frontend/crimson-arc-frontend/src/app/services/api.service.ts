@@ -86,7 +86,11 @@ export class ApiService {
     return this.http.put(`${this.apiUrl}/voters/${id}/toggle-status`, {}, { headers: this.getHeaders() });
   }
 
-  uploadVotersExcel(file: File): Observable<any> {
+  deleteVoter(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/voters/${id}`, { headers: this.getHeaders() });
+  }
+
+  uploadVoters(file: File): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);
     const token = localStorage.getItem('currentUser');
@@ -95,6 +99,10 @@ export class ApiService {
       'Authorization': user && user.token ? `Bearer ${user.token}` : ''
     });
     return this.http.post(`${this.apiUrl}/voters/upload`, formData, { headers });
+  }
+
+  uploadVotersExcel(file: File): Observable<any> {
+    return this.uploadVoters(file);
   }
 
   // Voting
@@ -128,20 +136,34 @@ export class ApiService {
     return this.http.put<ElectionSettings>(`${this.apiUrl}/elections/${id}`, election, { headers: this.getHeaders() });
   }
 
+  updateElectionSettings(settings: Partial<ElectionSettings>): Observable<ElectionSettings> {
+    // If settings has an ID, update it, otherwise create new
+    if (settings._id) {
+      return this.updateElection(settings._id, settings);
+    }
+    return this.createElection(settings);
+  }
+
   // Results
-  getResults(category: string, state?: string): Observable<{ positions: Result[] }> {
-    let url = `${this.apiUrl}/results?category=${category}`;
-    if (state) url += `&state=${state}`;
-    return this.http.get<{ positions: Result[] }>(url, { headers: this.getHeaders() });
+  getResults(category?: string, state?: string): Observable<any> {
+    let url = `${this.apiUrl}/results`;
+    const params: string[] = [];
+    if (category) params.push(`category=${category}`);
+    if (state) params.push(`state=${state}`);
+    if (params.length) url += `?${params.join('&')}`;
+    return this.http.get<any>(url, { headers: this.getHeaders() });
   }
 
   getAnalytics(): Observable<Analytics> {
     return this.http.get<Analytics>(`${this.apiUrl}/results/analytics`, { headers: this.getHeaders() });
   }
 
-  exportResults(category: string, state?: string): Observable<Blob> {
-    let url = `${this.apiUrl}/results/export?category=${category}`;
-    if (state) url += `&state=${state}`;
+  exportResults(category?: string, state?: string): Observable<Blob> {
+    let url = `${this.apiUrl}/results/export`;
+    const params: string[] = [];
+    if (category) params.push(`category=${category}`);
+    if (state) params.push(`state=${state}`);
+    if (params.length) url += `?${params.join('&')}`;
     return this.http.get(url, { 
       headers: this.getHeaders(), 
       responseType: 'blob'

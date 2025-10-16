@@ -1,0 +1,311 @@
+/* STCOGA Branding Colors */
+:host {
+  --primary-blue: #1E40AF;
+  --secondary-blue: #3B82F6;
+  --accent-brown: #D4A574;
+  --light-brown: #B8935A;
+  --text-dark: #1F2937;
+  --text-light: #F8FAFC;
+  --background-light: #F9FAFB;
+}
+
+.page-background {
+  min-height: 100vh;
+  background-image: 
+    linear-gradient(rgba(248, 250, 252, 0.97), rgba(248, 250, 252, 0.95)),
+    url('/assets/bg-image.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.page-content {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header Styles */
+.header {
+  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+  border-bottom: 2px solid var(--accent-brown);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--text-light);
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-light);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.back-btn, .logout-btn {
+  color: var(--text-light) !important;
+}
+
+.back-btn:hover, .logout-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.export-btn {
+  background: linear-gradient(135deg, var(--accent-brown) 0%, var(--light-brown) 100%) !important;
+  border: none !important;
+  color: white !important;
+}
+
+/* Main Container */
+.results-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  flex: 1;
+}
+
+/* Tab View Styles */
+::ng-deep .p-tabview {
+  .p-tabview-nav {
+    background: white;
+    border-bottom: 2px solid var(--accent-brown);
+  }
+
+  .p-tabview-nav li .p-tabview-nav-link {
+    color: var(--text-dark);
+    font-weight: 600;
+  }
+
+  .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+    color: var(--primary-blue);
+    border-color: var(--primary-blue);
+  }
+
+  .p-tabview-panels {
+    background: transparent;
+    padding: 2rem 0;
+  }
+}
+
+/* Results Content */
+.results-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.position-result {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.result-header {
+  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+  color: white;
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.result-header h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.header-stats {
+  display: flex;
+  gap: 1rem;
+}
+
+.total-votes {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.result-content {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Winner Box */
+.winner-box {
+  background: linear-gradient(135deg, rgba(212, 165, 116, 0.15) 0%, rgba(184, 147, 90, 0.05) 100%);
+  border: 2px solid var(--accent-brown);
+  border-radius: 12px;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.winner-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--accent-brown) 0%, var(--light-brown) 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 2.5rem;
+}
+
+.winner-info h4 {
+  margin: 0 0 0.5rem 0;
+  color: var(--accent-brown);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.winner-name {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.winner-votes {
+  margin: 0.5rem 0 0 0;
+  color: var(--text-dark);
+  opacity: 0.7;
+  font-size: 1rem;
+}
+
+/* Results Table */
+.results-table {
+  margin: 1rem 0;
+}
+
+::ng-deep .results-table .p-datatable {
+  .p-datatable-thead > tr > th {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+    color: white;
+    font-weight: 600;
+  }
+}
+
+.winner-row {
+  font-weight: 700;
+  color: var(--accent-brown);
+}
+
+.percentage-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.bar {
+  height: 24px;
+  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+  border-radius: 12px;
+  transition: width 0.5s ease;
+  min-width: 30px;
+}
+
+.percentage-text {
+  font-weight: 600;
+  color: var(--text-dark);
+  min-width: 50px;
+}
+
+/* Chart Container */
+.chart-container {
+  margin-top: 1rem;
+}
+
+.chart-container h4 {
+  color: var(--primary-blue);
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+}
+
+::ng-deep .chart-container .p-chart {
+  height: 300px;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.empty-state p {
+  color: var(--text-dark);
+  opacity: 0.7;
+  margin-top: 1rem;
+  font-size: 1.1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .results-container {
+    padding: 1rem;
+  }
+
+  .header-content {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .logo-text {
+    font-size: 1.2rem;
+  }
+
+  .user-section {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .result-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .winner-box {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .winner-name {
+    font-size: 1.5rem;
+  }
+}
+

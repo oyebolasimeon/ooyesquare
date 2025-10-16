@@ -1,0 +1,184 @@
+<div class="page-background">
+  <div class="page-content">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-content">
+        <div class="logo-section">
+          <button pButton icon="pi pi-arrow-left" (click)="goToDashboard()" class="p-button-text back-btn"></button>
+          <i class="pi pi-chart-bar" style="font-size: 2rem;"></i>
+          <span class="logo-text">Election Results & Analytics</span>
+        </div>
+        <div class="user-section">
+          <button pButton label="Export Results" icon="pi pi-download" (click)="exportResults()" 
+                  [loading]="exporting" class="export-btn"></button>
+          <button pButton icon="pi pi-sign-out" (click)="logout()" class="p-button-text logout-btn" label="Logout"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="results-container">
+      <p-tabView>
+        <!-- National Results Tab -->
+        <p-tabPanel header="National Elections" leftIcon="pi pi-flag">
+          <div class="results-content" *ngIf="!loading && nationalResults.length > 0">
+            <div class="position-result" *ngFor="let result of nationalResults">
+              <p-card>
+                <ng-template pTemplate="header">
+                  <div class="result-header">
+                    <h3>{{ getPositionName(result) }}</h3>
+                    <div class="header-stats">
+                      <span class="total-votes">
+                        <i class="pi pi-check-circle"></i>
+                        {{ result.totalVotes }} Total Votes
+                      </span>
+                    </div>
+                  </div>
+                </ng-template>
+
+                <div class="result-content">
+                  <!-- Winner Announcement -->
+                  <div class="winner-box" *ngIf="result.winner">
+                    <div class="winner-icon">
+                      <i class="pi pi-trophy"></i>
+                    </div>
+                    <div class="winner-info">
+                      <h4>Winner</h4>
+                      <p class="winner-name">{{ result.winner.contestant.name }}</p>
+                      <p class="winner-votes">
+                        {{ result.winner.voteCount }} votes 
+                        ({{ getVotePercentage(result.winner.voteCount, result.totalVotes) }}%)
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Results Table -->
+                  <div class="results-table">
+                    <p-table [value]="result.results" styleClass="p-datatable-sm">
+                      <ng-template pTemplate="header">
+                        <tr>
+                          <th>Rank</th>
+                          <th>Contestant</th>
+                          <th>Votes</th>
+                          <th>Percentage</th>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="body" let-item let-i="rowIndex">
+                        <tr>
+                          <td>{{ i + 1 }}</td>
+                          <td>
+                            <span [class.winner-row]="i === 0">{{ item.contestant.name }}</span>
+                          </td>
+                          <td>{{ item.voteCount }}</td>
+                          <td>
+                            <div class="percentage-bar">
+                              <div class="bar" [style.width]="getVotePercentage(item.voteCount, result.totalVotes) + '%'"></div>
+                              <span class="percentage-text">{{ getVotePercentage(item.voteCount, result.totalVotes) }}%</span>
+                            </div>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+
+                  <!-- Chart -->
+                  <div class="chart-container">
+                    <h4>Vote Distribution</h4>
+                    <p-chart type="bar" [data]="getChartData(result)" [options]="getChartOptions()"></p-chart>
+                  </div>
+                </div>
+              </p-card>
+            </div>
+          </div>
+
+          <div class="empty-state" *ngIf="!loading && nationalResults.length === 0">
+            <i class="pi pi-inbox" style="font-size: 3rem; color: #94A3B8;"></i>
+            <p>No national election results available yet.</p>
+          </div>
+        </p-tabPanel>
+
+        <!-- State Results Tab -->
+        <p-tabPanel header="State Elections" leftIcon="pi pi-map">
+          <div class="results-content" *ngIf="!loading && stateResults.length > 0">
+            <div class="position-result" *ngFor="let result of stateResults">
+              <p-card>
+                <ng-template pTemplate="header">
+                  <div class="result-header">
+                    <h3>{{ getPositionName(result) }}</h3>
+                    <div class="header-stats">
+                      <span class="total-votes">
+                        <i class="pi pi-check-circle"></i>
+                        {{ result.totalVotes }} Total Votes
+                      </span>
+                    </div>
+                  </div>
+                </ng-template>
+
+                <div class="result-content">
+                  <!-- Winner Announcement -->
+                  <div class="winner-box" *ngIf="result.winner">
+                    <div class="winner-icon">
+                      <i class="pi pi-trophy"></i>
+                    </div>
+                    <div class="winner-info">
+                      <h4>Winner</h4>
+                      <p class="winner-name">{{ result.winner.contestant.name }}</p>
+                      <p class="winner-votes">
+                        {{ result.winner.voteCount }} votes 
+                        ({{ getVotePercentage(result.winner.voteCount, result.totalVotes) }}%)
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Results Table -->
+                  <div class="results-table">
+                    <p-table [value]="result.results" styleClass="p-datatable-sm">
+                      <ng-template pTemplate="header">
+                        <tr>
+                          <th>Rank</th>
+                          <th>Contestant</th>
+                          <th>Votes</th>
+                          <th>Percentage</th>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="body" let-item let-i="rowIndex">
+                        <tr>
+                          <td>{{ i + 1 }}</td>
+                          <td>
+                            <span [class.winner-row]="i === 0">{{ item.contestant.name }}</span>
+                          </td>
+                          <td>{{ item.voteCount }}</td>
+                          <td>
+                            <div class="percentage-bar">
+                              <div class="bar" [style.width]="getVotePercentage(item.voteCount, result.totalVotes) + '%'"></div>
+                              <span class="percentage-text">{{ getVotePercentage(item.voteCount, result.totalVotes) }}%</span>
+                            </div>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+
+                  <!-- Chart -->
+                  <div class="chart-container">
+                    <h4>Vote Distribution</h4>
+                    <p-chart type="bar" [data]="getChartData(result)" [options]="getChartOptions()"></p-chart>
+                  </div>
+                </div>
+              </p-card>
+            </div>
+          </div>
+
+          <div class="empty-state" *ngIf="!loading && stateResults.length === 0">
+            <i class="pi pi-inbox" style="font-size: 3rem; color: #94A3B8;"></i>
+            <p>No state election results available yet.</p>
+          </div>
+        </p-tabPanel>
+      </p-tabView>
+    </div>
+
+    <!-- Toast Messages -->
+    <p-toast></p-toast>
+  </div>
+</div>
+

@@ -1,0 +1,101 @@
+<div class="page-background">
+  <div class="page-content">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-content">
+        <div class="logo-section">
+          <button pButton icon="pi pi-arrow-left" (click)="goToDashboard()" class="p-button-text back-btn"></button>
+          <i class="pi pi-briefcase" style="font-size: 2rem;"></i>
+          <span class="logo-text">Manage Positions</span>
+        </div>
+        <div class="user-section">
+          <button pButton icon="pi pi-sign-out" (click)="logout()" class="p-button-text logout-btn" label="Logout"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="positions-container">
+      <div class="toolbar">
+        <button pButton label="New Position" icon="pi pi-plus" (click)="openNewDialog()" class="add-btn"></button>
+      </div>
+
+      <!-- Positions Table -->
+      <p-card>
+        <p-table [value]="positions" [loading]="loading" [paginator]="true" [rows]="10" 
+                 responsiveLayout="scroll" styleClass="p-datatable-striped">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Position Name</th>
+              <th>Category</th>
+              <th>State</th>
+              <th>Actions</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-position>
+            <tr>
+              <td>{{ position.name }}</td>
+              <td>
+                <span [class]="'category-badge ' + position.category.toLowerCase()">
+                  {{ position.category }}
+                </span>
+              </td>
+              <td>{{ position.state || '-' }}</td>
+              <td>
+                <button pButton icon="pi pi-pencil" (click)="openEditDialog(position)" 
+                        class="p-button-rounded p-button-text edit-btn" pTooltip="Edit"></button>
+                <button pButton icon="pi pi-trash" (click)="deletePosition(position)" 
+                        class="p-button-rounded p-button-text delete-btn" pTooltip="Delete"></button>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="4" class="empty-message">
+                <div class="empty-state">
+                  <i class="pi pi-inbox" style="font-size: 3rem; color: #94A3B8;"></i>
+                  <p>No positions found. Create your first position to get started.</p>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-card>
+    </div>
+
+    <!-- Create/Edit Dialog -->
+    <p-dialog [(visible)]="displayDialog" [header]="isEditMode ? 'Edit Position' : 'Create Position'" 
+              [modal]="true" [style]="{width: '500px'}" [draggable]="false" [resizable]="false">
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="name">Position Name *</label>
+          <input pInputText id="name" [ngModel]="currentPosition.name" (ngModelChange)="currentPosition.name = $event" placeholder="e.g., President, Secretary" />
+        </div>
+
+        <div class="form-field">
+          <label for="category">Category *</label>
+          <p-dropdown id="category" [ngModel]="currentPosition.category" (ngModelChange)="currentPosition.category = $event" [options]="categories" 
+                      placeholder="Select Category" optionLabel="label" optionValue="value"></p-dropdown>
+        </div>
+
+        <div class="form-field" *ngIf="currentPosition.category === 'State'">
+          <label for="state">State *</label>
+          <p-dropdown id="state" [ngModel]="currentPosition.state" (ngModelChange)="currentPosition.state = $event" [options]="nigerianStates" 
+                      placeholder="Select State" optionLabel="label" optionValue="value" [filter]="true"></p-dropdown>
+        </div>
+      </div>
+
+      <ng-template pTemplate="footer">
+        <button pButton label="Cancel" icon="pi pi-times" (click)="hideDialog()" class="p-button-text"></button>
+        <button pButton label="Save" icon="pi pi-check" (click)="savePosition()" class="save-btn"></button>
+      </ng-template>
+    </p-dialog>
+
+    <!-- Toast Messages -->
+    <p-toast></p-toast>
+
+    <!-- Confirmation Dialog -->
+    <p-confirmDialog></p-confirmDialog>
+  </div>
+</div>
+

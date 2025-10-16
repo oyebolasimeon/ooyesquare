@@ -16,52 +16,52 @@
       <!-- Positions List -->
       <div *ngIf="!loading" class="positions-list">
         <p-card *ngFor="let position of positions" class="position-card">
-          <div class="position-header" (click)="togglePosition(position._id)">
+          <div class="position-header" (click)="togglePosition(position._id!)">
             <div class="position-info">
-              <h3>{{ position.title }}</h3>
+              <h3>{{ position.name || position.title }}</h3>
               <p *ngIf="position.description">{{ position.description }}</p>
             </div>
             <div class="position-status">
-              <span *ngIf="selectedVotes[position._id] === undefined" class="status-badge pending">
+              <span *ngIf="selectedVotes[position._id!] === undefined" class="status-badge pending">
                 <i class="pi pi-clock"></i> Not Voted
               </span>
-              <span *ngIf="selectedVotes[position._id] === null" class="status-badge skipped">
+              <span *ngIf="selectedVotes[position._id!] === null" class="status-badge skipped">
                 <i class="pi pi-minus-circle"></i> Skipped
               </span>
-              <span *ngIf="selectedVotes[position._id] && selectedVotes[position._id] !== null" class="status-badge voted">
+              <span *ngIf="selectedVotes[position._id!] && selectedVotes[position._id!] !== null" class="status-badge voted">
                 <i class="pi pi-check-circle"></i> Voted
               </span>
-              <i class="pi" [ngClass]="expandedPositions[position._id] ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+              <i class="pi" [ngClass]="expandedPositions[position._id!] ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
             </div>
           </div>
 
           <!-- Contestants -->
-          <div *ngIf="expandedPositions[position._id]" class="contestants-section">
+          <div *ngIf="expandedPositions[position._id!]" class="contestants-section">
             <div class="contestants-grid">
               <div 
-                *ngFor="let contestant of contestants[position._id]"
+                *ngFor="let contestant of contestants[position._id!]"
                 class="contestant-card"
-                [ngClass]="{'selected': selectedVotes[position._id] === contestant._id}"
-                (click)="selectContestant(position._id, contestant._id)">
+                [ngClass]="{'selected': selectedVotes[position._id!] === contestant._id}"
+                (click)="selectContestant(position._id!, contestant._id!)">
                 <div class="contestant-avatar">
                   <p-avatar 
-                    [label]="contestant.firstName.charAt(0) + contestant.lastName.charAt(0)" 
+                    [label]="(contestant.firstName || contestant.name || 'C').charAt(0) + (contestant.lastName || 'N').charAt(0)" 
                     size="xlarge" 
                     shape="circle"
-                    [style]="{'background-color': selectedVotes[position._id] === contestant._id ? '#4F46E5' : '#9CA3AF', 'color': '#ffffff'}">
+                    [style]="{'background-color': selectedVotes[position._id!] === contestant._id ? '#4F46E5' : '#9CA3AF', 'color': '#ffffff'}">
                   </p-avatar>
-                  <div *ngIf="selectedVotes[position._id] === contestant._id" class="check-icon">
+                  <div *ngIf="selectedVotes[position._id!] === contestant._id" class="check-icon">
                     <i class="pi pi-check"></i>
                   </div>
                 </div>
                 <div class="contestant-info">
-                  <h4>{{ contestant.firstName }} {{ contestant.maidenName ? contestant.maidenName + ' ' : '' }}{{ contestant.lastName }}</h4>
+                  <h4>{{ contestant.name || (contestant.firstName + ' ' + (contestant.maidenName ? contestant.maidenName + ' ' : '') + contestant.lastName) }}</h4>
                   <p *ngIf="contestant.bio">{{ contestant.bio }}</p>
                 </div>
                 <p-radioButton 
-                  [name]="'position_' + position._id" 
-                  [value]="contestant._id"
-                  [(ngModel)]="selectedVotes[position._id]">
+                  [name]="'position_' + position._id!" 
+                  [value]="contestant._id!"
+                  [(ngModel)]="selectedVotes[position._id!]">
                 </p-radioButton>
               </div>
             </div>
@@ -72,7 +72,7 @@
                 label="Skip this position" 
                 icon="pi pi-forward"
                 class="p-button-text p-button-secondary"
-                (click)="skipPosition(position._id)">
+                (click)="skipPosition(position._id!)">
               </button>
             </div>
           </div>
@@ -117,7 +117,7 @@
       You have not voted for {{ emptyPositions.length }} position(s):
     </p>
     <ul class="empty-positions-list">
-      <li *ngFor="let pos of emptyPositions">{{ pos.title }}</li>
+      <li *ngFor="let pos of emptyPositions">{{ pos.name || pos.title }}</li>
     </ul>
     <p>Are you sure you want to continue without voting for these positions?</p>
   </div>

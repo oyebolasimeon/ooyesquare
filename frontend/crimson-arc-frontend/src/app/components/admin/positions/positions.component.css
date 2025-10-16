@@ -1,0 +1,216 @@
+/* STCOGA Branding Colors */
+:host {
+  --primary-blue: #1E40AF;
+  --secondary-blue: #3B82F6;
+  --accent-brown: #D4A574;
+  --light-brown: #B8935A;
+  --text-dark: #1F2937;
+  --text-light: #F8FAFC;
+  --background-light: #F9FAFB;
+}
+
+.page-background {
+  min-height: 100vh;
+  background-image: 
+    linear-gradient(rgba(248, 250, 252, 0.97), rgba(248, 250, 252, 0.95)),
+    url('/assets/bg-image.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.page-content {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header Styles */
+.header {
+  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+  border-bottom: 2px solid var(--accent-brown);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--text-light);
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-light);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.back-btn, .logout-btn {
+  color: var(--text-light) !important;
+}
+
+.back-btn:hover, .logout-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Main Container */
+.positions-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  flex: 1;
+}
+
+/* Toolbar */
+.toolbar {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.add-btn {
+  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%) !important;
+  border: none !important;
+  padding: 0.75rem 1.5rem !important;
+  font-size: 1rem !important;
+  transition: all 0.3s ease !important;
+}
+
+.add-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(30, 64, 175, 0.3) !important;
+}
+
+/* Table Styles */
+::ng-deep .p-datatable {
+  .p-datatable-thead > tr > th {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+    color: white;
+    font-weight: 600;
+    padding: 1rem;
+  }
+
+  .p-datatable-tbody > tr {
+    transition: all 0.3s ease;
+  }
+
+  .p-datatable-tbody > tr:hover {
+    background: rgba(30, 64, 175, 0.05);
+  }
+}
+
+.category-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: inline-block;
+}
+
+.category-badge.national {
+  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+  color: white;
+}
+
+.category-badge.state {
+  background: linear-gradient(135deg, var(--accent-brown) 0%, var(--light-brown) 100%);
+  color: white;
+}
+
+.edit-btn {
+  color: var(--secondary-blue) !important;
+  margin-right: 0.5rem;
+}
+
+.delete-btn {
+  color: #EF4444 !important;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+}
+
+.empty-state p {
+  color: var(--text-dark);
+  opacity: 0.7;
+  margin-top: 1rem;
+  font-size: 1.1rem;
+}
+
+.empty-message {
+  text-align: center;
+}
+
+/* Dialog Styles */
+::ng-deep .p-dialog {
+  .p-dialog-header {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+    color: white;
+    font-weight: 600;
+  }
+
+  .p-dialog-content {
+    padding: 2rem;
+  }
+}
+
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-field label {
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.form-field input,
+::ng-deep .p-dropdown {
+  width: 100%;
+}
+
+.save-btn {
+  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%) !important;
+  border: none !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .positions-container {
+    padding: 1rem;
+  }
+
+  .header-content {
+    padding: 1rem;
+  }
+
+  .logo-text {
+    font-size: 1.2rem;
+  }
+
+  ::ng-deep .p-dialog {
+    width: 95% !important;
+  }
+}
+

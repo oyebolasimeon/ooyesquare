@@ -16,6 +16,7 @@ export interface Voter extends User {
     state: boolean;
   };
   status: string;
+  isActive: boolean; // Add isActive field
 }
 
 export interface Admin extends User {
@@ -23,30 +24,33 @@ export interface Admin extends User {
 }
 
 export interface Position {
-  _id: string;
-  title: string;
+  _id?: string;
+  name: string; // Changed from title
+  title?: string; // Keep for backward compatibility
   description?: string;
   category: 'National' | 'State';
   state?: string;
-  order: number;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  order?: number;
+  isActive?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface Contestant {
-  _id: string;
-  firstName: string;
-  lastName: string;
+  _id?: string;
+  name: string; // Add name field
+  firstName?: string;
+  lastName?: string;
   maidenName?: string;
-  position: string | Position;
+  position?: string | Position;
+  positionId?: string; // Add positionId field
   photo?: string;
   bio?: string;
-  order: number;
-  isActive: boolean;
-  voteCount: number;
-  createdAt: Date;
-  updatedAt: Date;
+  order?: number;
+  isActive?: boolean;
+  voteCount?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface VoteSubmission {

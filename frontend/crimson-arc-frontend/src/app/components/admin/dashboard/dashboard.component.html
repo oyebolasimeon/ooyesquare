@@ -1,0 +1,101 @@
+<div class="page-background">
+  <div class="page-content">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-content">
+        <div class="logo-section">
+          <i class="pi pi-shield" style="font-size: 2rem;"></i>
+          <span class="logo-text">STCOGA ADMIN</span>
+        </div>
+        <div class="user-section">
+          <button pButton icon="pi pi-sign-out" (click)="logout()" class="p-button-text logout-btn" label="Logout"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="dashboard-container">
+      <div class="page-title">
+        <h1>Dashboard</h1>
+        <p class="subtitle">Manage STCOGA National Executive Council Elections</p>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card" (click)="navigateTo('positions')">
+          <div class="stat-icon positions">
+            <i class="pi pi-briefcase"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{ stats.totalPositions }}</h3>
+            <p>Total Positions</p>
+          </div>
+        </div>
+
+        <div class="stat-card" (click)="navigateTo('contestants')">
+          <div class="stat-icon contestants">
+            <i class="pi pi-users"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{ stats.totalContestants }}</h3>
+            <p>Total Contestants</p>
+          </div>
+        </div>
+
+        <div class="stat-card" (click)="navigateTo('voters')">
+          <div class="stat-icon voters">
+            <i class="pi pi-user"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{ stats.totalVoters }}</h3>
+            <p>Total Voters</p>
+          </div>
+        </div>
+
+        <div class="stat-card" (click)="navigateTo('results')">
+          <div class="stat-icon votes">
+            <i class="pi pi-check-circle"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{ stats.totalVotes }}</h3>
+            <p>Total Votes Cast</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <h2>Quick Actions</h2>
+        <div class="action-buttons">
+          <button pButton label="Manage Positions" icon="pi pi-briefcase" (click)="navigateTo('positions')" class="action-btn"></button>
+          <button pButton label="Manage Contestants" icon="pi pi-users" (click)="navigateTo('contestants')" class="action-btn"></button>
+          <button pButton label="Manage Voters" icon="pi pi-user" (click)="navigateTo('voters')" class="action-btn"></button>
+          <button pButton label="Election Settings" icon="pi pi-cog" (click)="navigateTo('elections')" class="action-btn"></button>
+          <button pButton label="View Results" icon="pi pi-chart-bar" (click)="navigateTo('results')" class="action-btn"></button>
+        </div>
+      </div>
+
+      <!-- Election Status -->
+      <div class="election-status" *ngIf="electionStatus">
+        <h2>Election Status</h2>
+        <p-card>
+          <div class="status-content">
+            <div class="status-item">
+              <label>Start Date:</label>
+              <span>{{ electionStatus.startDate ? (electionStatus.startDate | date:'medium') : 'Not Set' }}</span>
+            </div>
+            <div class="status-item">
+              <label>End Date:</label>
+              <span>{{ electionStatus.endDate ? (electionStatus.endDate | date:'medium') : 'Not Set' }}</span>
+            </div>
+            <div class="status-item">
+              <label>Status:</label>
+              <p-tag [value]="electionStatus.isActive ? 'Active' : 'Inactive'" [severity]="electionStatus.isActive ? 'success' : 'danger'"></p-tag>
+            </div>
+          </div>
+        </p-card>
+      </div>
+    </div>
+  </div>
+</div>
+
