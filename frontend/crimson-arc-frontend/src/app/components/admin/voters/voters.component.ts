@@ -5,49 +5,56 @@ import { Router } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
-import { DialogModule } from 'primeng/dialog';
-import { InputTextModule } from 'primeng/inputtext';
-import { FileUploadModule } from 'primeng/fileupload';
 import { TagModule } from 'primeng/tag';
+import { TooltipModule } from 'primeng/tooltip';
 import { ToastModule } from 'primeng/toast';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { MessageService, ConfirmationService } from 'primeng/api';
+import { InputTextModule } from 'primeng/inputtext';
+import { MessageService } from 'primeng/api';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { DeleteConfirmationModalComponent } from '../shared/delete-confirmation-modal.component';
 import { ApiService } from '../../../services/api.service';
 import { AuthService } from '../../../services/auth.service';
 import { Voter } from '../../../models/models';
+import { AdminSidebarComponent } from '../shared/admin-sidebar.component';
+import { AdminTopbarComponent } from '../shared/admin-topbar.component';
+import { VoterUploadModalComponent } from './voter-upload-modal.component';
 
 @Component({
   selector: 'app-voters',
   standalone: true,
   imports: [
-    CommonModule, 
-    FormsModule, 
+    CommonModule,
+    FormsModule,
     CardModule, 
     ButtonModule, 
     TableModule, 
-    DialogModule, 
-    InputTextModule,
-    FileUploadModule,
     TagModule,
+    TooltipModule,
     ToastModule,
-    ConfirmDialogModule
+    InputTextModule,
+    AdminSidebarComponent,
+    AdminTopbarComponent
   ],
-  providers: [MessageService, ConfirmationService],
+  providers: [MessageService],
   templateUrl: './voters.component.html',
   styleUrls: ['./voters.component.css']
 })
 export class VotersComponent implements OnInit {
   voters: Voter[] = [];
+  filteredVoters: Voter[] = [];
   loading = true;
-  displayUploadDialog = false;
-  uploadedFile: File | null = null;
+  resendingEmails: { [key: string]: boolean } = {};
+  resendingAll = false;
+  searchText: string = '';
+  rowsPerPage: number = 10;
+  rowsPerPageOptions: number[] = [10, 25, 50, 100];
 
   constructor(
     private apiService: ApiService,
     private authService: AuthService,
     private router: Router,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService
+    private modalService: NgbModal
   ) {}
 
   ngOnInit() {
@@ -59,6 +66,7 @@ export class VotersComponent implements OnInit {
     this.apiService.getVoters().subscribe({
       next: (voters) => {
         this.voters = voters;
+        this.filteredVoters = voters;
         this.loading = false;
       },
       error: (error) => {
@@ -73,48 +81,42 @@ export class VotersComponent implements OnInit {
     });
   }
 
-  openUploadDialog() {
-    this.displayUploadDialog = true;
-  }
-
-  hideUploadDialog() {
-    this.displayUploadDialog = false;
-    this.uploadedFile = null;
-  }
-
-  onFileSelect(event: any) {
-    if (event.files && event.files.length > 0) {
-      this.uploadedFile = event.files[0];
-    }
-  }
-
-  uploadExcel() {
-    if (!this.uploadedFile) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Warning',
-        detail: 'Please select a file to upload'
-      });
+  filterVoters() {
+    if (!this.searchText.trim()) {
+      this.filteredVoters = this.voters;
       return;
     }
 
-    this.apiService.uploadVoters(this.uploadedFile).subscribe({
-      next: (response: any) => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: `Successfully uploaded ${response.count} voters`
-        });
-        this.hideUploadDialog();
+    const searchLower = this.searchText.toLowerCase().trim();
+    this.filteredVoters = this.voters.filter(voter => {
+      return (
+        voter.email?.toLowerCase().includes(searchLower) ||
+        voter.phoneNumber?.toLowerCase().includes(searchLower) ||
+        voter.firstName?.toLowerCase().includes(searchLower) ||
+        voter.lastName?.toLowerCase().includes(searchLower) ||
+        voter.maidenName?.toLowerCase().includes(searchLower) ||
+        voter.status?.toLowerCase().includes(searchLower) ||
+        (voter.hasVoted ? 'yes' : 'no').includes(searchLower)
+      );
+    });
+  }
+
+  clearSearch() {
+    this.searchText = '';
+    this.filteredVoters = this.voters;
+  }
+
+  openUploadDialog() {
+    const modalRef = this.modalService.open(VoterUploadModalComponent, {
+      size: 'lg',
+      centered: true,
+      backdrop: 'static'
+    });
+
+    modalRef.componentInstance.reload.subscribe((val: boolean) => {
+      if (val) {
         this.loadVoters();
-      },
-      error: (error: any) => {
-        console.error('Error uploading voters:', error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: error.error?.message || 'Failed to upload voters'
-        });
+        modalRef.dismiss();
       }
     });
   }
@@ -122,13 +124,14 @@ export class VotersComponent implements OnInit {
   toggleVoterStatus(voter: Voter) {
     const newStatus = voter.isActive ? 'inactive' : 'active';
     const action = voter.isActive ? 'deactivate' : 'activate';
-
-    this.confirmationService.confirm({
-      message: `Are you sure you want to ${action} voter "${voter.email}"?`,
-      header: 'Confirm Status Change',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        if (voter._id) {
+    const modalRef = this.modalService.open(DeleteConfirmationModalComponent, {
+      centered: true
+    });
+    modalRef.componentInstance.message = `Are you sure you want to ${action} voter "${voter.email}"?`;
+    
+    modalRef.result.then(
+      (confirmed) => {
+        if (confirmed && voter._id) {
           this.apiService.updateVoter(voter._id, { isActive: !voter.isActive }).subscribe({
             next: () => {
               this.messageService.add({
@@ -148,17 +151,20 @@ export class VotersComponent implements OnInit {
             }
           });
         }
-      }
-    });
+      },
+      () => {} // Dismissed
+    );
   }
 
   deleteVoter(voter: Voter) {
-    this.confirmationService.confirm({
-      message: `Are you sure you want to delete voter "${voter.email}"?`,
-      header: 'Confirm Deletion',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        if (voter._id) {
+    const modalRef = this.modalService.open(DeleteConfirmationModalComponent, {
+      centered: true
+    });
+    modalRef.componentInstance.message = `Are you sure you want to delete voter "${voter.email}"?`;
+    
+    modalRef.result.then(
+      (confirmed) => {
+        if (confirmed && voter._id) {
           this.apiService.deleteVoter(voter._id).subscribe({
             next: () => {
               this.messageService.add({
@@ -178,6 +184,66 @@ export class VotersComponent implements OnInit {
             }
           });
         }
+      },
+      () => {} // Dismissed
+    );
+  }
+
+  resendEmail(voter: Voter) {
+    if (!voter._id) return;
+    
+    this.resendingEmails[voter._id] = true;
+    
+    this.apiService.resendVoterEmail(voter._id).subscribe({
+      next: (response) => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: `Credentials email resent to ${voter.email}`
+        });
+        this.resendingEmails[voter._id] = false;
+      },
+      error: (error) => {
+        console.error('Error resending email:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to resend email'
+        });
+        this.resendingEmails[voter._id] = false;
+      }
+    });
+  }
+
+  resendAllEmails() {
+    if (this.voters.length === 0) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Warning',
+        detail: 'No voters to send emails to'
+      });
+      return;
+    }
+
+    this.resendingAll = true;
+    
+    this.apiService.resendAllVotersEmails().subscribe({
+      next: (response) => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: `Emails sent: ${response.results.sent} successful, ${response.results.failed} failed`
+        });
+        this.resendingAll = false;
+      },
+      error: (error) => {
+        console.error('Error resending all emails:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to resend emails'
+        });
+        this.resendingAll = false;
       }
     });
   }

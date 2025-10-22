@@ -3,7 +3,7 @@
     <div class="login-card">
       <div class="login-header">
         <div class="logo-container">
-          <i class="pi pi-shield" style="font-size: 3rem; color: #1E40AF; margin-bottom: 1rem;"></i>
+          <img src="assets/logo.png" alt="STCOGA Logo" class="logo-image" />
         </div>
         <h1>STCOGA Elections</h1>
         <p class="subtitle">National Executive Council Elections</p>
@@ -27,17 +27,17 @@
       <!-- Voter Login Form -->
       <form *ngIf="loginType === 'voter'" (ngSubmit)="voterLogin()" class="login-form">
         <h2>Voter Login</h2>
-        <p class="form-description">Enter your registered email and phone number</p>
+        <p class="form-description">Enter your maiden name and phone number</p>
 
         <div class="form-group">
-          <label for="voterEmail">Email Address</label>
+          <label for="voterMaidenName">Maiden Name</label>
           <input 
-            type="email" 
-            id="voterEmail" 
-            name="voterEmail"
-            [(ngModel)]="voterEmail" 
+            type="text" 
+            id="voterMaidenName" 
+            name="voterMaidenName"
+            [(ngModel)]="voterMaidenName" 
             required
-            placeholder="your.email@example.com"
+            placeholder="Your maiden name"
             class="form-input">
         </div>
 
@@ -59,7 +59,7 @@
 
         <button 
           type="submit" 
-          [disabled]="loading || !voterEmail || !voterPhone"
+          [disabled]="loading || !voterMaidenName || !voterPhone"
           class="btn-primary">
           {{ loading ? 'Logging in...' : 'Login to Vote' }}
         </button>
@@ -108,6 +108,7 @@
 
       <div class="login-footer">
         <p>© 2025 STCOGA - All Rights Reserved</p>
+        <p>Developed by Crimson Arc Ltd.</p>
       </div>
     </div>
   </div>

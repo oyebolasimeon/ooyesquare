@@ -7,10 +7,13 @@ import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { ToastModule } from 'primeng/toast';
+import { TagModule } from 'primeng/tag';
 import { MessageService } from 'primeng/api';
 import { ApiService } from '../../../services/api.service';
 import { AuthService } from '../../../services/auth.service';
 import { ElectionSettings } from '../../../models/models';
+import { AdminSidebarComponent } from '../shared/admin-sidebar.component';
+import { AdminTopbarComponent } from '../shared/admin-topbar.component';
 
 @Component({
   selector: 'app-elections',
@@ -22,7 +25,10 @@ import { ElectionSettings } from '../../../models/models';
     ButtonModule, 
     CalendarModule,
     InputSwitchModule,
-    ToastModule
+    ToastModule,
+    TagModule,
+    AdminSidebarComponent,
+    AdminTopbarComponent
   ],
   providers: [MessageService],
   templateUrl: './elections.component.html',
@@ -54,19 +60,21 @@ export class ElectionsComponent implements OnInit {
   loadSettings() {
     this.loading = true;
     this.apiService.getElectionSettings().subscribe({
-      next: (settingsArray) => {
-        if (settingsArray && settingsArray.length > 0) {
-          const settings = settingsArray[0]; // Get first election settings
-          this.settings = {
-            ...settings,
-            startDate: settings.startDate ? new Date(settings.startDate) : undefined,
-            endDate: settings.endDate ? new Date(settings.endDate) : undefined
-          };
-        }
+      next: (settings) => {
+        this.settings = {
+          ...settings,
+          startDate: settings.startDate ? new Date(settings.startDate) : undefined,
+          endDate: settings.endDate ? new Date(settings.endDate) : undefined
+        };
         this.loading = false;
       },
       error: (error: any) => {
         console.error('Error loading election settings:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load election settings'
+        });
         this.loading = false;
       }
     });
@@ -132,13 +140,13 @@ export class ElectionsComponent implements OnInit {
     }
   }
 
-  getStatusSeverity(): string {
+  getStatusSeverity(): 'success' | 'info' | 'warn' | 'danger' {
     const status = this.getElectionStatus();
     switch (status) {
       case 'Active': return 'success';
       case 'Upcoming': return 'info';
       case 'Ended': return 'danger';
-      default: return 'warning';
+      default: return 'warn';
     }
   }
 

@@ -45,8 +45,8 @@ export class AuthService {
       }));
   }
 
-  voterLogin(email: string, phoneNumber: string): Observable<Voter> {
-    return this.http.post<Voter>(`${this.apiUrl}/voter/login`, { email, phoneNumber })
+  voterLogin(maidenName: string, phoneNumber: string): Observable<Voter> {
+    return this.http.post<Voter>(`${this.apiUrl}/voter/login`, { maidenName, phoneNumber })
       .pipe(map(user => {
         localStorage.setItem('currentUser', JSON.stringify(user));
         this.currentUserSubject.next(user);
@@ -54,7 +54,27 @@ export class AuthService {
       }));
   }
 
-  logout(): void {
+  logout(): Observable<any> | void {
+    const user = this.currentUserValue;
+    
+    // If user is a voter with a token, call logout endpoint to clear session
+    if (user && 'phoneNumber' in user && user.token) {
+      return this.http.post(`${this.apiUrl}/voter/logout`, {}, {
+        headers: { 'Authorization': `Bearer ${user.token}` }
+      }).pipe(map(() => {
+        localStorage.removeItem('currentUser');
+        this.currentUserSubject.next(null);
+        return true;
+      }));
+    } else {
+      // For admins or users without tokens, just clear local storage
+      localStorage.removeItem('currentUser');
+      this.currentUserSubject.next(null);
+    }
+  }
+
+  // Force logout (for session expired scenarios)
+  forceLogout(): void {
     localStorage.removeItem('currentUser');
     this.currentUserSubject.next(null);
   }
@@ -62,5 +82,19 @@ export class AuthService {
   getToken(): string | null {
     const user = this.currentUserValue;
     return user ? user.token : null;
+  }
+
+  // Update voter's votedCategories in local storage
+  updateVoterStatus(votedCategories: { national: boolean; state: boolean }, hasVoted: boolean): void {
+    const currentUser = this.currentUserValue;
+    if (currentUser && 'phoneNumber' in currentUser) {
+      const updatedUser = {
+        ...currentUser,
+        votedCategories,
+        hasVoted
+      };
+      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+      this.currentUserSubject.next(updatedUser);
+    }
   }
 }

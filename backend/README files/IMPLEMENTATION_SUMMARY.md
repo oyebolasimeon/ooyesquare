@@ -527,7 +527,7 @@ The heavy lifting is done. The remaining work is building Angular components fol
 
 ---
 
-**Built for STCOGA - Scripture Truth Christian Overcomers Church of God Assembly**  
+**Built for STCOGA - Developed by Simeon Oyebola (Crimsom Arc Ltd) - Developed by Simeon Oyebola (Crimsom Arc Ltd)**  
 **Date:** October 2025  
 **Status:** Backend Complete, Frontend 60% Complete
 

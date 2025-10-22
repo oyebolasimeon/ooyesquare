@@ -45,17 +45,17 @@
                 (click)="selectContestant(position._id!, contestant._id!)">
                 <div class="contestant-avatar">
                   <p-avatar 
-                    [label]="(contestant.firstName || contestant.name || 'C').charAt(0) + (contestant.lastName || 'N').charAt(0)" 
+                    [image]="getContestantAvatar(contestant._id)" 
                     size="xlarge" 
                     shape="circle"
-                    [style]="{'background-color': selectedVotes[position._id!] === contestant._id ? '#4F46E5' : '#9CA3AF', 'color': '#ffffff'}">
+                    [style]="{'width': '80px', 'height': '80px'}">
                   </p-avatar>
                   <div *ngIf="selectedVotes[position._id!] === contestant._id" class="check-icon">
                     <i class="pi pi-check"></i>
                   </div>
                 </div>
                 <div class="contestant-info">
-                  <h4>{{ contestant.name || (contestant.firstName + ' ' + (contestant.maidenName ? contestant.maidenName + ' ' : '') + contestant.lastName) }}</h4>
+                  <h4>{{ contestant.firstName }} {{ contestant.maidenName ? contestant.maidenName + ' ' : '' }}{{ contestant.lastName }}</h4>
                   <p *ngIf="contestant.bio">{{ contestant.bio }}</p>
                 </div>
                 <p-radioButton 
@@ -102,76 +102,4 @@
   </div>
 </div>
 
-<!-- Empty Votes Warning Modal -->
-<p-dialog 
-  header="Incomplete Voting" 
-  [(visible)]="showEmptyWarning" 
-  [modal]="true"
-  [closable]="false"
-  [style]="{width: '500px'}">
-  <div class="modal-content">
-    <div class="warning-icon">
-      <i class="pi pi-exclamation-triangle" style="font-size: 3rem; color: #F59E0B;"></i>
-    </div>
-    <p class="modal-message">
-      You have not voted for {{ emptyPositions.length }} position(s):
-    </p>
-    <ul class="empty-positions-list">
-      <li *ngFor="let pos of emptyPositions">{{ pos.name || pos.title }}</li>
-    </ul>
-    <p>Are you sure you want to continue without voting for these positions?</p>
-  </div>
-  <ng-template pTemplate="footer">
-    <button 
-      pButton 
-      label="Go Back" 
-      icon="pi pi-arrow-left"
-      class="p-button-text"
-      (click)="showEmptyWarning = false">
-    </button>
-    <button 
-      pButton 
-      label="Continue" 
-      icon="pi pi-arrow-right"
-      (click)="proceedWithEmpty()">
-    </button>
-  </ng-template>
-</p-dialog>
-
-<!-- Final Confirmation Modal -->
-<p-dialog 
-  header="Confirm Submission" 
-  [(visible)]="showFinalConfirmation" 
-  [modal]="true"
-  [closable]="!submitting"
-  [style]="{width: '500px'}">
-  <div class="modal-content">
-    <div class="confirm-icon">
-      <i class="pi pi-question-circle" style="font-size: 3rem; color: #4F46E5;"></i>
-    </div>
-    <p class="modal-message">
-      You are about to submit your votes. This action cannot be undone.
-    </p>
-    <p><strong>Are you sure you want to proceed?</strong></p>
-  </div>
-  <ng-template pTemplate="footer">
-    <button 
-      pButton 
-      label="Cancel" 
-      icon="pi pi-times"
-      class="p-button-text"
-      [disabled]="submitting"
-      (click)="showFinalConfirmation = false">
-    </button>
-    <button 
-      pButton 
-      label="Submit Votes" 
-      icon="pi pi-check"
-      class="p-button-success"
-      [disabled]="submitting"
-      [loading]="submitting"
-      (click)="finalSubmit()">
-    </button>
-  </ng-template>
-</p-dialog>
 

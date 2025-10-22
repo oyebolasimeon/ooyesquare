@@ -1,163 +1,87 @@
 const ElectionSettings = require('../models/ElectionSettings');
-const { NIGERIAN_STATES } = require('../utils/constants');
 
-// @desc    Get all election settings
+// @desc    Get election settings (general settings)
 // @route   GET /api/elections
 // @access  Private/Admin
 const getElectionSettings = async (req, res) => {
   try {
-    const { category, state } = req.query;
-    const filter = {};
-
-    if (category) {
-      filter.category = category;
-    }
-
-    if (state && category === 'State') {
-      filter.state = state;
-    }
-
-    const elections = await ElectionSettings.find(filter).sort({ category: 1, state: 1 });
-    res.json(elections);
+    const settings = await ElectionSettings.getSettings();
+    res.json(settings);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-// @desc    Get single election setting
-// @route   GET /api/elections/:id
+// @desc    Update election settings
+// @route   PUT /api/elections
 // @access  Private/Admin
-const getElectionById = async (req, res) => {
-  try {
-    const election = await ElectionSettings.findById(req.params.id);
-
-    if (election) {
-      res.json(election);
-    } else {
-      res.status(404).json({ message: 'Election setting not found' });
-    }
-  } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
-};
-
-// @desc    Create election setting
-// @route   POST /api/elections
-// @access  Private/Admin
-const createElection = async (req, res) => {
-  try {
-    const { category, state, startDate, endDate } = req.body;
-
-    // Validate category
-    if (!['National', 'State'].includes(category)) {
-      return res.status(400).json({ message: 'Invalid category' });
-    }
-
-    // Validate state if category is State
-    if (category === 'State') {
-      if (!state || !NIGERIAN_STATES.includes(state)) {
-        return res.status(400).json({ message: 'Invalid state for State category' });
-      }
-    }
-
-    // Check if election already exists for this category/state
-    const existingElection = await ElectionSettings.findOne({
-      category,
-      ...(category === 'State' && { state })
-    });
-
-    if (existingElection) {
-      return res.status(400).json({ 
-        message: `Election setting already exists for ${category}${category === 'State' ? ` - ${state}` : ''}` 
-      });
-    }
-
-    // Determine status based on dates
-    const now = new Date();
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-
-    let status = 'pending';
-    if (now >= start && now <= end) {
-      status = 'ongoing';
-    } else if (now > end) {
-      status = 'ended';
-    }
-
-    const election = await ElectionSettings.create({
-      category,
-      state: category === 'State' ? state : undefined,
-      startDate,
-      endDate,
-      status
-    });
-
-    res.status(201).json(election);
-  } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
-};
-
-// @desc    Update election setting
-// @route   PUT /api/elections/:id
-// @access  Private/Admin
-const updateElection = async (req, res) => {
+const updateElectionSettings = async (req, res) => {
   try {
     const { startDate, endDate, isActive } = req.body;
 
-    const election = await ElectionSettings.findById(req.params.id);
-
-    if (!election) {
-      return res.status(404).json({ message: 'Election setting not found' });
+    // Validate required fields
+    if (!startDate || !endDate) {
+      return res.status(400).json({ message: 'Start date and end date are required' });
     }
 
-    if (startDate) {
-      election.startDate = startDate;
+    // Validate dates
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      return res.status(400).json({ message: 'Invalid date format' });
     }
 
-    if (endDate) {
-      election.endDate = endDate;
+    if (start >= end) {
+      return res.status(400).json({ message: 'End date must be after start date' });
     }
 
-    if (isActive !== undefined) {
-      election.isActive = isActive;
-    }
-
-    // Update status based on dates
-    const now = new Date();
-    const start = new Date(election.startDate);
-    const end = new Date(election.endDate);
-
-    if (now >= start && now <= end) {
-      election.status = 'ongoing';
-    } else if (now > end) {
-      election.status = 'ended';
+    // Get existing settings or create new one
+    let settings = await ElectionSettings.findOne();
+    
+    if (!settings) {
+      // Create new settings
+      settings = await ElectionSettings.create({
+        startDate,
+        endDate,
+        isActive: isActive !== undefined ? isActive : false
+      });
     } else {
-      election.status = 'pending';
+      // Update existing settings
+      settings.startDate = startDate;
+      settings.endDate = endDate;
+      
+      if (isActive !== undefined) {
+        settings.isActive = isActive;
+      }
+      
+      settings.updatedAt = Date.now();
+      await settings.save();
     }
 
-    election.updatedAt = Date.now();
-
-    const updatedElection = await election.save();
-    res.json(updatedElection);
+    res.json(settings);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-// @desc    Delete election setting
-// @route   DELETE /api/elections/:id
-// @access  Private/Admin
-const deleteElection = async (req, res) => {
+// @desc    Check if election is currently active (for voters)
+// @route   GET /api/elections/status
+// @access  Public
+const getElectionStatus = async (req, res) => {
   try {
-    const election = await ElectionSettings.findById(req.params.id);
-
-    if (election) {
-      await election.deleteOne();
-      res.json({ message: 'Election setting removed' });
-    } else {
-      res.status(404).json({ message: 'Election setting not found' });
-    }
+    const settings = await ElectionSettings.getSettings();
+    
+    // Only check isActive status (ignore dates)
+    const isActive = settings.isActive;
+    
+    res.json({
+      isActive,
+      isScheduledActive: settings.isActive,
+      startDate: settings.startDate,
+      endDate: settings.endDate,
+      message: isActive ? 'Election is active' : 'Election is currently disabled'
+    });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
@@ -165,9 +89,7 @@ const deleteElection = async (req, res) => {
 
 module.exports = {
   getElectionSettings,
-  getElectionById,
-  createElection,
-  updateElection,
-  deleteElection
+  updateElectionSettings,
+  getElectionStatus
 };
 

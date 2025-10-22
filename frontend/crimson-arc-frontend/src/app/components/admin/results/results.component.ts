@@ -12,11 +12,15 @@ import { MessageService } from 'primeng/api';
 import { ApiService } from '../../../services/api.service';
 import { AuthService } from '../../../services/auth.service';
 import { Position } from '../../../models/models';
+import { AdminSidebarComponent } from '../shared/admin-sidebar.component';
+import { AdminTopbarComponent } from '../shared/admin-topbar.component';
 
 interface PositionResult {
   position: Position;
   results: any[];
   winner: any;
+  isTie: boolean;
+  tiedContestants: any[];
   totalVotes: number;
 }
 
@@ -31,7 +35,9 @@ interface PositionResult {
     TabViewModule,
     TagModule,
     ChartModule,
-    ToastModule
+    ToastModule,
+    AdminSidebarComponent,
+    AdminTopbarComponent
   ],
   providers: [MessageService],
   templateUrl: './results.component.html',
@@ -42,6 +48,7 @@ export class ResultsComponent implements OnInit {
   nationalResults: PositionResult[] = [];
   stateResults: PositionResult[] = [];
   exporting = false;
+  activeTabIndex = 0; // Track active tab (0 = National, 1 = State)
 
   constructor(
     private apiService: ApiService,
@@ -56,29 +63,60 @@ export class ResultsComponent implements OnInit {
 
   loadResults() {
     this.loading = true;
-    this.apiService.getResults().subscribe({
-      next: (data: any) => {
-        // Handle both array and object responses
-        const results = Array.isArray(data) ? data : (data.positions || []);
-        // Separate results by category
-        this.nationalResults = results.filter((r: any) => 
-          r.position.category === 'National'
-        );
-        this.stateResults = results.filter((r: any) => 
-          r.position.category === 'State'
-        );
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error loading results:', error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to load results'
-        });
-        this.loading = false;
-      }
+    
+    // Load both National and State results
+    Promise.all([
+      this.apiService.getResults('National').toPromise(),
+      this.apiService.getResults('State').toPromise()
+    ]).then(([nationalData, stateData]) => {
+      // Transform backend response to match frontend expectations
+      this.nationalResults = this.transformResults(nationalData);
+      this.stateResults = this.transformResults(stateData);
+      this.loading = false;
+    }).catch((error) => {
+      console.error('Error loading results:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Failed to load results'
+      });
+      this.loading = false;
     });
+  }
+
+  transformResults(data: any): PositionResult[] {
+    if (!data || !data.positions) return [];
+    
+    return data.positions.map((pos: any) => ({
+      position: {
+        _id: pos.position._id,
+        name: pos.position.title,
+        title: pos.position.title,
+        category: pos.position.category,
+        state: pos.position.state
+      },
+      results: pos.contestants.map((c: any) => ({
+        contestant: {
+          _id: c._id,
+          firstName: c.firstName,
+          lastName: c.lastName,
+          maidenName: c.maidenName
+        },
+        voteCount: c.voteCount,
+        percentage: c.percentage
+      })),
+      isTie: pos.isTie || false,
+      tiedContestants: pos.tiedContestants || [],
+      winner: pos.winner ? {
+        contestant: {
+          firstName: pos.winner.firstName,
+          lastName: pos.winner.lastName,
+          maidenName: pos.winner.maidenName
+        },
+        voteCount: pos.winner.voteCount
+      } : null,
+      totalVotes: pos.totalVotes
+    }));
   }
 
   getPositionName(result: PositionResult): string {
@@ -88,7 +126,7 @@ export class ResultsComponent implements OnInit {
   }
 
   getChartData(result: PositionResult): any {
-    const labels = result.results.map((r: any) => r.contestant.name);
+    const labels = result.results.map((r: any) => `${r.contestant.firstName} ${r.contestant.lastName}`);
     const data = result.results.map((r: any) => r.voteCount);
     
     return {
@@ -146,22 +184,30 @@ export class ResultsComponent implements OnInit {
     return ((votes / total) * 100).toFixed(1);
   }
 
+  onTabChange(event: any) {
+    this.activeTabIndex = event.index;
+  }
+
   exportResults() {
     this.exporting = true;
-    this.apiService.exportResults().subscribe({
+    
+    // Determine category based on active tab
+    const category = this.activeTabIndex === 0 ? 'National' : 'State';
+    
+    this.apiService.exportResults(category).subscribe({
       next: (blob: Blob) => {
         // Create a download link
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `election-results-${new Date().toISOString().split('T')[0]}.xlsx`;
+        link.download = `election-results-${category}-${new Date().toISOString().split('T')[0]}.xlsx`;
         link.click();
         window.URL.revokeObjectURL(url);
         
         this.messageService.add({
           severity: 'success',
           summary: 'Success',
-          detail: 'Results exported successfully'
+          detail: `${category} results exported successfully`
         });
         this.exporting = false;
       },

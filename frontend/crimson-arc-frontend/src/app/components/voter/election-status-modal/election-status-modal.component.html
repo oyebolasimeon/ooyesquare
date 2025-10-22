@@ -1,0 +1,82 @@
+<div class="modal-header" [ngClass]="getStatusClass()">
+  <div class="header-content">
+    <div class="status-icon">
+      <i class="pi" [ngClass]="getStatusIcon()"></i>
+    </div>
+    <h4 class="modal-title">{{ getStatusTitle() }}</h4>
+  </div>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+
+<div class="modal-body">
+  <div class="status-content">
+    <!-- Message -->
+    <div class="status-message">
+      <p>{{ status?.message }}</p>
+    </div>
+
+    <!-- Countdown -->
+    <div class="countdown-section" *ngIf="countdown && status && !status.isActive">
+      <div class="countdown-box">
+        <i class="pi pi-stopwatch"></i>
+        <span class="countdown-text">{{ countdown }}</span>
+      </div>
+    </div>
+
+    <!-- Election Schedule -->
+    <div class="schedule-section">
+      <div class="schedule-card">
+        <div class="schedule-item start">
+          <div class="schedule-icon">
+            <i class="pi pi-calendar-plus"></i>
+          </div>
+          <div class="schedule-info">
+            <span class="schedule-label">Start Date & Time</span>
+            <span class="schedule-value">{{ formatDate(status?.startDate) }}</span>
+          </div>
+        </div>
+
+        <div class="schedule-divider">
+          <i class="pi pi-arrow-right"></i>
+        </div>
+
+        <div class="schedule-item end">
+          <div class="schedule-icon">
+            <i class="pi pi-calendar-minus"></i>
+          </div>
+          <div class="schedule-info">
+            <span class="schedule-label">End Date & Time</span>
+            <span class="schedule-value">{{ formatDate(status?.endDate) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Details -->
+    <div class="status-details">
+      <div class="detail-item">
+        <span class="detail-label">Election Status:</span>
+        <span class="detail-value" [ngClass]="status?.isScheduledActive ? 'enabled' : 'disabled'">
+          {{ status?.isScheduledActive ? 'Enabled' : 'Disabled' }}
+        </span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Within Schedule:</span>
+        <span class="detail-value" [ngClass]="status?.isWithinSchedule ? 'yes' : 'no'">
+          {{ status?.isWithinSchedule ? 'Yes' : 'No' }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Info Box -->
+    <div class="info-box">
+      <i class="pi pi-info-circle"></i>
+      <p>Please check back during the scheduled election period. You will be able to cast your vote once the election is active.</p>
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button pButton label="Close" icon="pi pi-times" (click)="close()" class="close-button"></button>
+</div>
+

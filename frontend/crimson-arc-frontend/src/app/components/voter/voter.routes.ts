@@ -18,4 +18,8 @@ export const VOTER_ROUTES: Routes = [
     path: 'thank-you', 
     loadComponent: () => import('./thank-you/thank-you.component').then(m => m.ThankYouComponent) 
   },
+  { 
+    path: 'already-voted', 
+    loadComponent: () => import('./already-voted/already-voted.component').then(m => m.AlreadyVotedComponent) 
+  },
 ];

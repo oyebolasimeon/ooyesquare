@@ -1,74 +1,113 @@
-<div class="page-background">
-  <div class="page-content">
-    <!-- Header -->
-    <div class="header">
-      <div class="header-content">
-        <div class="logo-section">
-          <button pButton icon="pi pi-arrow-left" (click)="goToDashboard()" class="p-button-text back-btn"></button>
-          <i class="pi pi-cog" style="font-size: 2rem;"></i>
-          <span class="logo-text">Election Settings</span>
-        </div>
-        <div class="user-section">
-          <button pButton icon="pi pi-sign-out" (click)="logout()" class="p-button-text logout-btn" label="Logout"></button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="elections-container">
-      <div class="settings-card">
-        <p-card>
+<div class="admin-layout">
+  <app-admin-sidebar #sidebar [activeRoute]="'elections'"></app-admin-sidebar>
+  
+  <div class="main-content">
+    <app-admin-topbar [title]="'Election Settings'" [icon]="'pi-calendar'" (toggleMenu)="sidebar.toggleMobileMenu()"></app-admin-topbar>
+    
+    <div class="content-area">
+      <div class="elections-container">
+        <p-card styleClass="settings-card">
           <ng-template pTemplate="header">
-            <div class="card-header">
-              <h2>Election Schedule</h2>
-              <div class="status-badge">
-                <span class="status-label">Status:</span>
-                <span [class]="'status-value ' + getStatusSeverity()">{{ getElectionStatus() }}</span>
+            <div class="card-header-custom">
+              <div>
+                <h2>Election Schedule</h2>
+                <p>Configure election dates and activation</p>
               </div>
+              <p-tag [value]="getElectionStatus()" 
+                     [severity]="getStatusSeverity()"></p-tag>
             </div>
           </ng-template>
 
           <div class="form-content">
             <div class="form-row">
               <div class="form-field">
-                <label for="startDate">Start Date & Time *</label>
+                <label for="startDate" class="field-label">
+                  <i class="pi pi-calendar label-icon"></i>
+                  Start Date & Time *
+                </label>
                 <p-calendar 
                   id="startDate" 
                   [(ngModel)]="settings.startDate" 
                   [showTime]="true" 
                   [showSeconds]="false"
+                  [showIcon]="true"
+                  [iconDisplay]="'input'"
+                  icon="pi pi-calendar"
                   [minDate]="minDate"
-                  dateFormat="dd/mm/yy"
-                  placeholder="Select start date and time"
-                  [disabled]="loading">
+                  dateFormat="dd M yy"
+                  hourFormat="12"
+                  placeholder="Click to select start date and time"
+                  [disabled]="loading"
+                  [showButtonBar]="true"
+                  [readonlyInput]="false"
+                  styleClass="custom-calendar"
+                  inputStyleClass="custom-calendar-input">
+                  <ng-template pTemplate="footer">
+                    <div class="calendar-footer">
+                      <small class="text-muted">Select both date and time</small>
+                    </div>
+                  </ng-template>
                 </p-calendar>
+                <small class="field-hint">When the voting period begins</small>
               </div>
 
               <div class="form-field">
-                <label for="endDate">End Date & Time *</label>
+                <label for="endDate" class="field-label">
+                  <i class="pi pi-calendar label-icon"></i>
+                  End Date & Time *
+                </label>
                 <p-calendar 
                   id="endDate" 
                   [(ngModel)]="settings.endDate" 
                   [showTime]="true" 
                   [showSeconds]="false"
+                  [showIcon]="true"
+                  [iconDisplay]="'input'"
+                  icon="pi pi-calendar"
                   [minDate]="settings.startDate || minDate"
-                  dateFormat="dd/mm/yy"
-                  placeholder="Select end date and time"
-                  [disabled]="loading">
+                  dateFormat="dd M yy"
+                  hourFormat="12"
+                  placeholder="Click to select end date and time"
+                  [disabled]="loading"
+                  [showButtonBar]="true"
+                  [readonlyInput]="false"
+                  styleClass="custom-calendar"
+                  inputStyleClass="custom-calendar-input">
+                  <ng-template pTemplate="footer">
+                    <div class="calendar-footer">
+                      <small class="text-muted">Select both date and time</small>
+                    </div>
+                  </ng-template>
                 </p-calendar>
+                <small class="field-hint">When the voting period ends</small>
               </div>
             </div>
 
             <div class="form-field switch-field">
-              <label for="isActive">
-                <i class="pi pi-power-off"></i>
-                Enable Election
+              <div class="switch-label">
+                <div class="switch-icon-wrapper">
+                  <i class="pi pi-power-off"></i>
+                </div>
+                <div class="switch-text">
+                  <h4>Enable Election</h4>
+                  <p>Toggle to activate or deactivate the election</p>
+                  <span class="switch-status" [class.active]="settings.isActive">
+                    {{ settings.isActive ? 'Election is currently ACTIVE' : 'Election is currently INACTIVE' }}
+                  </span>
+                </div>
+              </div>
+              <!-- Custom Toggle Switch -->
+              <label class="toggle-switch" [class.disabled]="loading">
+                <input 
+                  type="checkbox" 
+                  id="isActive"
+                  [(ngModel)]="settings.isActive"
+                  [disabled]="loading"
+                  class="toggle-checkbox">
+                <span class="toggle-slider">
+                  <span class="toggle-icon">{{ settings.isActive ? '✓' : '✕' }}</span>
+                </span>
               </label>
-              <p-inputSwitch 
-                id="isActive" 
-                [(ngModel)]="settings.isActive"
-                [disabled]="loading">
-              </p-inputSwitch>
             </div>
 
             <div class="info-box">
@@ -94,9 +133,7 @@
         </p-card>
       </div>
     </div>
-
-    <!-- Toast Messages -->
-    <p-toast></p-toast>
   </div>
-</div>
 
+  <p-toast></p-toast>
+</div>

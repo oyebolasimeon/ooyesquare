@@ -168,7 +168,7 @@ color: #4B5563;
 **"STCOGA DECIDES"** - Used in voter interface
 
 ### Full Name
-**Scripture Truth Christian Overcomers Church of God Assembly**
+**Developed by Simeon Oyebola (Crimsom Arc Ltd)**
 
 ### Motto (from shield)
 **"CUM MARIA MATRI JESU"** - With Mary, Mother of Jesus

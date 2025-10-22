@@ -13,6 +13,7 @@ import { ButtonModule } from 'primeng/button';
 })
 export class ThankYouComponent implements OnInit {
   category: string = '';
+  confettiArray = Array(50).fill(0);
 
   constructor(
     private route: ActivatedRoute,

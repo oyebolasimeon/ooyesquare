@@ -5,15 +5,19 @@ import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { AvatarModule } from 'primeng/avatar';
-import { DialogModule } from 'primeng/dialog';
 import { FormsModule } from '@angular/forms';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ApiService } from '../../../services/api.service';
-import { Position, Contestant, VoteSubmission } from '../../../models/models';
+import { AuthService } from '../../../services/auth.service';
+import { Position, Contestant, VoteSubmission, Voter } from '../../../models/models';
+import { EmptyVotesModalComponent } from './empty-votes-modal.component';
+import { ConfirmSubmissionModalComponent } from './confirm-submission-modal.component';
+import { ErrorModalComponent } from './error-modal.component';
 
 @Component({
   selector: 'app-voting',
   standalone: true,
-  imports: [CommonModule, FormsModule, CardModule, ButtonModule, RadioButtonModule, AvatarModule, DialogModule],
+  imports: [CommonModule, FormsModule, CardModule, ButtonModule, RadioButtonModule, AvatarModule],
   templateUrl: './voting.component.html',
   styleUrls: ['./voting.component.css']
 })
@@ -24,11 +28,10 @@ export class VotingComponent implements OnInit {
   contestants: { [positionId: string]: Contestant[] } = {};
   selectedVotes: { [positionId: string]: string | null } = {};
   expandedPositions: { [positionId: string]: boolean } = {};
+  contestantAvatars: { [contestantId: string]: string } = {};
   
   loading = true;
   submitting = false;
-  showEmptyWarning = false;
-  showFinalConfirmation = false;
   emptyPositions: Position[] = [];
   
   // Expose Object to template
@@ -37,13 +40,34 @@ export class VotingComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private authService: AuthService,
+    private modalService: NgbModal
   ) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       this.category = params['category'];
       this.state = params['state'];
+      
+      // Check if user has already voted for this category
+      const currentUser = this.authService.currentUserValue;
+      if (currentUser && 'votedCategories' in currentUser) {
+        const voter = currentUser as Voter;
+        const categoryKey = this.category.toLowerCase() as 'national' | 'state';
+        
+        if (voter.votedCategories[categoryKey]) {
+          // Redirect to already-voted page
+          this.router.navigate(['/voter/already-voted'], { 
+            queryParams: { 
+              category: this.category,
+              state: this.state 
+            } 
+          });
+          return;
+        }
+      }
+      
       this.loadPositions();
     });
   }
@@ -72,11 +96,31 @@ export class VotingComponent implements OnInit {
     this.apiService.getContestants(positionId).subscribe({
       next: (contestants) => {
         this.contestants[positionId] = contestants;
+        // Generate avatars for each contestant
+        contestants.forEach(contestant => {
+          if (contestant._id) {
+            this.generateContestantAvatar(contestant);
+          }
+        });
       },
       error: (err) => {
         console.error('Error loading contestants:', err);
       }
     });
+  }
+
+  generateContestantAvatar(contestant: Contestant) {
+    if (!contestant._id) return;
+    const firstName = contestant.firstName || 'Contestant';
+    const lastName = contestant.lastName || '';
+    const seed = `${firstName}${lastName}`.toLowerCase().replace(/\s/g, '');
+    // Using notionists-neutral style for professional/corporate look
+    this.contestantAvatars[contestant._id] = `https://api.dicebear.com/7.x/notionists-neutral/svg?seed=${seed}`;
+  }
+
+  getContestantAvatar(contestantId: string | undefined): string {
+    if (!contestantId) return '';
+    return this.contestantAvatars[contestantId] || '';
   }
 
   togglePosition(positionId: string | undefined) {
@@ -109,15 +153,39 @@ export class VotingComponent implements OnInit {
 
   submitVotes() {
     if (this.checkForEmptyVotes()) {
-      this.showEmptyWarning = true;
+      const modalRef = this.modalService.open(EmptyVotesModalComponent, { 
+        size: 'lg',
+        backdrop: 'static'
+      });
+      modalRef.componentInstance.emptyPositions = this.emptyPositions;
+      
+      modalRef.result.then(
+        (result) => {
+          if (result) {
+            this.openConfirmationModal();
+          }
+        },
+        () => {} // Dismissed
+      );
     } else {
-      this.showFinalConfirmation = true;
+      this.openConfirmationModal();
     }
   }
 
-  proceedWithEmpty() {
-    this.showEmptyWarning = false;
-    this.showFinalConfirmation = true;
+  openConfirmationModal() {
+    const modalRef = this.modalService.open(ConfirmSubmissionModalComponent, { 
+      size: 'md',
+      backdrop: 'static'
+    });
+    
+    modalRef.result.then(
+      (result) => {
+        if (result) {
+          this.finalSubmit();
+        }
+      },
+      () => {} // Dismissed
+    );
   }
 
   finalSubmit() {
@@ -132,14 +200,42 @@ export class VotingComponent implements OnInit {
 
     this.apiService.submitVotes(votes, this.category, this.state).subscribe({
       next: () => {
-        this.showFinalConfirmation = false;
-        this.router.navigate(['/voter/thank-you'], { 
-          queryParams: { category: this.category } 
+        // Update local voter status after successful submission
+        this.apiService.getVotingStatus().subscribe({
+          next: (status) => {
+            this.authService.updateVoterStatus(status.votedCategories, status.hasVoted);
+            this.router.navigate(['/voter/thank-you'], { 
+              queryParams: { category: this.category } 
+            });
+          },
+          error: () => {
+            // Even if status fetch fails, navigate to thank you page
+            this.router.navigate(['/voter/thank-you'], { 
+              queryParams: { category: this.category } 
+            });
+          }
         });
       },
       error: (err) => {
         this.submitting = false;
-        alert('Error submitting votes: ' + (err.error?.message || 'Please try again'));
+        
+        // Check if error is due to already voted
+        if (err.status === 400 && err.error?.message?.includes('already voted')) {
+          this.router.navigate(['/voter/already-voted'], { 
+            queryParams: { 
+              category: this.category,
+              state: this.state 
+            } 
+          });
+        } else {
+          // Show error modal
+          const modalRef = this.modalService.open(ErrorModalComponent, {
+            centered: true,
+            backdrop: 'static'
+          });
+          modalRef.componentInstance.title = 'Error Submitting Votes';
+          modalRef.componentInstance.message = err.error?.message || 'An error occurred. Please try again.';
+        }
       }
     });
   }

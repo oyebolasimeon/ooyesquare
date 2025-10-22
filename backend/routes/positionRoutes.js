@@ -6,11 +6,13 @@ const {
   createPosition,
   updatePosition,
   deletePosition,
-  getStates
+  getStates,
+  getStatesWithPositions
 } = require('../controllers/positionController');
 const { protect, adminOnly } = require('../middleware/auth');
 
 router.get('/states/list', getStates);
+router.get('/states/available', getStatesWithPositions);
 router.route('/')
   .get(protect, getPositions)
   .post(protect, adminOnly, createPosition);

@@ -1,19 +1,6 @@
 const mongoose = require('mongoose');
 
 const electionSettingsSchema = new mongoose.Schema({
-  category: {
-    type: String,
-    required: true,
-    enum: ['National', 'State'],
-    unique: true
-  },
-  state: {
-    type: String,
-    // Required only if category is 'State'
-    required: function() {
-      return this.category === 'State';
-    }
-  },
   startDate: {
     type: Date,
     required: true
@@ -22,14 +9,9 @@ const electionSettingsSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
-  status: {
-    type: String,
-    enum: ['pending', 'ongoing', 'ended'],
-    default: 'pending'
-  },
   isActive: {
     type: Boolean,
-    default: true
+    default: false
   },
   createdAt: {
     type: Date,
@@ -41,8 +23,19 @@ const electionSettingsSchema = new mongoose.Schema({
   }
 });
 
-// Index for faster queries
-electionSettingsSchema.index({ category: 1, state: 1 });
+// Only allow one election settings document
+electionSettingsSchema.statics.getSettings = async function() {
+  let settings = await this.findOne();
+  if (!settings) {
+    // Create default settings if none exist
+    settings = await this.create({
+      startDate: new Date(),
+      endDate: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours from now
+      isActive: false
+    });
+  }
+  return settings;
+};
 
 module.exports = mongoose.model('ElectionSettings', electionSettingsSchema);
 

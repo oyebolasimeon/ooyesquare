@@ -38,12 +38,11 @@ export interface Position {
 
 export interface Contestant {
   _id?: string;
-  name: string; // Add name field
-  firstName?: string;
-  lastName?: string;
+  firstName: string;
+  lastName: string;
   maidenName?: string;
   position?: string | Position;
-  positionId?: string; // Add positionId field
+  positionId?: string; // Add positionId field for form handling
   photo?: string;
   bio?: string;
   order?: number;

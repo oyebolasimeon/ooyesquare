@@ -36,8 +36,29 @@ const getResults = async (req, res) => {
       // Get abstentions (votes with no contestant selected)
       const abstentions = await Vote.countDocuments({ position: position._id, contestant: null });
 
-      // Calculate winner (contestant with most votes)
-      const winner = contestants.length > 0 ? contestants[0] : null;
+      // Determine winner or tie
+      let winner = null;
+      let isTie = false;
+      let tiedContestants = [];
+      
+      if (contestants.length > 0) {
+        const highestVoteCount = contestants[0].voteCount;
+        
+        // Check if there's a tie (multiple contestants with the same highest vote count)
+        // Include ties even when vote count is 0
+        tiedContestants = contestants.filter(c => c.voteCount === highestVoteCount);
+        console.log("tied contestants", tiedContestants)
+        console.log("highest vote count", highestVoteCount)
+        console.log("contestants", contestants)
+        
+        if (tiedContestants.length > 1) {
+          // It's a tie if multiple contestants have the same vote count
+          isTie = true;
+        } else if (tiedContestants.length === 1 && highestVoteCount > 0) {
+          // Only declare a winner if they have at least 1 vote
+          winner = tiedContestants[0];
+        }
+      }
 
       results.push({
         position: {
@@ -56,6 +77,14 @@ const getResults = async (req, res) => {
         })),
         totalVotes,
         abstentions,
+        isTie,
+        tiedContestants: isTie ? tiedContestants.map(c => ({
+          _id: c._id,
+          firstName: c.firstName,
+          lastName: c.lastName,
+          maidenName: c.maidenName,
+          voteCount: c.voteCount
+        })) : [],
         winner: winner ? {
           _id: winner._id,
           firstName: winner.firstName,
@@ -169,7 +198,7 @@ const exportResults = async (req, res) => {
 
       contestants.forEach((contestant, index) => {
         exportData.push({
-          'Position': position.title,
+          'Position': position.name,
           'Category': position.category,
           'State': position.state || 'N/A',
           'Rank': index + 1,
@@ -183,7 +212,7 @@ const exportResults = async (req, res) => {
 
       // Add summary row
       exportData.push({
-        'Position': position.title,
+        'Position': position.name,
         'Category': position.category,
         'State': position.state || 'N/A',
         'Rank': 'TOTAL',

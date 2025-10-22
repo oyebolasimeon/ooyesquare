@@ -99,14 +99,29 @@ const updatePosition = async (req, res) => {
       }
     }
 
-    position.title = title || position.title;
-    position.description = description || position.description;
-    position.category = category || position.category;
-    position.state = (category === 'State' || position.category === 'State') ? state : undefined;
-    position.order = order !== undefined ? order : position.order;
-    position.isActive = isActive !== undefined ? isActive : position.isActive;
+    // Update fields - use !== undefined to allow empty strings
+    if (title !== undefined) {
+      position.title = title;
+      position.name = title; // Sync name with title
+    }
+    if (description !== undefined) {
+      position.description = description;
+    }
+    if (category !== undefined) {
+      position.category = category;
+    }
+    if (state !== undefined) {
+      position.state = (category === 'State' || position.category === 'State') ? state : undefined;
+    }
+    if (order !== undefined) {
+      position.order = order;
+    }
+    if (isActive !== undefined) {
+      position.isActive = isActive;
+    }
     position.updatedAt = Date.now();
 
+    // Save the updated position - the pre-validate hook will sync title and name
     const updatedPosition = await position.save();
     res.json(updatedPosition);
   } catch (error) {
@@ -143,12 +158,33 @@ const getStates = async (req, res) => {
   }
 };
 
+// @desc    Get states that have positions
+// @route   GET /api/positions/states/available
+// @access  Public
+const getStatesWithPositions = async (req, res) => {
+  try {
+    // Get distinct states from positions where category is 'State'
+    const statesWithPositions = await Position.distinct('state', { 
+      category: 'State',
+      state: { $exists: true, $ne: null, $ne: '' }
+    });
+    
+    // Sort alphabetically
+    const sortedStates = statesWithPositions.sort();
+    
+    res.json(sortedStates);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 module.exports = {
   getPositions,
   getPositionById,
   createPosition,
   updatePosition,
   deletePosition,
-  getStates
+  getStates,
+  getStatesWithPositions
 };
 

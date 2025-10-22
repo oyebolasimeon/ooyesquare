@@ -1,49 +1,102 @@
-<div class="page-background">
-  <div class="page-content">
-    <div class="container">
-      <div class="header-section">
-        <button pButton icon="pi pi-arrow-left" (click)="goBack()" class="p-button-text" label="Back"></button>
-        <h1>Select Your State</h1>
-        <p class="subtitle">Choose your state to vote for state executive positions</p>
-      </div>
+<div class="states-page">
+  <!-- Header with Logo and Back Button -->
+  <div class="page-header">
+    <div class="header-content">
+      <img src="assets/logo.png" alt="STCOGA Logo" class="header-logo" />
+      <button pButton icon="pi pi-arrow-left" (click)="goBack()" class="back-button" label="Back"></button>
+    </div>
+  </div>
 
-      <!-- Search Box -->
-      <div class="search-section">
-        <span class="p-input-icon-left full-width">
-          <i class="pi pi-search"></i>
-          <input 
-            type="text" 
-            pInputText 
-            placeholder="Search states..." 
-            [(ngModel)]="searchTerm"
-            (input)="filterStates()"
-            class="full-width">
+  <div class="page-container">
+    <!-- Hero Section -->
+    <div class="hero-section">
+      <div class="hero-icon">
+        <i class="pi pi-map-marker"></i>
+      </div>
+      <h1 class="page-title">Select Your State</h1>
+      <p class="page-subtitle">Choose your state to vote for state executive positions</p>
+      
+      <!-- Stats Badge -->
+      <div class="stats-badge">
+        <i class="pi pi-info-circle"></i>
+        <span>{{ states.length }} states available</span>
+      </div>
+    </div>
+
+    <!-- Search Box -->
+    <div class="search-container">
+      <div class="search-box">
+        <i class="pi pi-search search-icon"></i>
+        <input 
+          type="text" 
+          pInputText 
+          placeholder="Search for your state..." 
+          [(ngModel)]="searchTerm"
+          (input)="filterStates()"
+          class="search-input">
+        <span *ngIf="searchTerm" class="clear-search" (click)="clearSearch()">
+          <i class="pi pi-times"></i>
         </span>
       </div>
-
-      <!-- States Grid -->
-      <div *ngIf="loading" class="loading-spinner">
-        <i class="pi pi-spin pi-spinner" style="font-size: 3rem; color: #4F46E5;"></i>
+      <div *ngIf="searchTerm" class="search-results-count">
+        {{ filteredStates.length }} state<span *ngIf="filteredStates.length !== 1">s</span> found
       </div>
+    </div>
 
-      <div *ngIf="!loading" class="states-grid">
-        <p-card 
-          *ngFor="let state of filteredStates"
-          class="state-card"
-          (click)="selectState(state)">
-          <div class="state-content">
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-container">
+      <div class="loading-spinner">
+        <div class="spinner-ring"></div>
+        <div class="spinner-ring"></div>
+        <div class="spinner-ring"></div>
+      </div>
+      <p class="loading-text">Loading states...</p>
+    </div>
+
+    <!-- States Grid -->
+    <div *ngIf="!loading && filteredStates.length > 0" class="states-grid">
+      <div 
+        *ngFor="let state of filteredStates; let i = index"
+        class="state-card"
+        (click)="selectState(state)"
+        [style.animation-delay.ms]="i * 50">
+        <div class="state-card-inner">
+          <div class="state-icon-wrapper">
             <div class="state-icon">
               <i class="pi pi-map-marker"></i>
             </div>
-            <h3>{{ state }}</h3>
-            <button pButton icon="pi pi-arrow-right" class="p-button-text p-button-sm"></button>
+            <div class="icon-glow"></div>
           </div>
-        </p-card>
+          <h3 class="state-name">{{ state }}</h3>
+          <div class="state-arrow">
+            <i class="pi pi-arrow-right"></i>
+          </div>
+        </div>
+        <div class="card-shine"></div>
       </div>
+    </div>
 
-      <div *ngIf="!loading && filteredStates.length === 0" class="no-results">
-        <i class="pi pi-search" style="font-size: 3rem; color: #9CA3AF;"></i>
-        <p>No states found matching "{{ searchTerm }}"</p>
+    <!-- No Results -->
+    <div *ngIf="!loading && filteredStates.length === 0" class="no-results">
+      <div class="no-results-icon">
+        <i class="pi pi-info-circle"></i>
+      </div>
+      <h3>No State Elections Available</h3>
+      <p>There are currently no state executive positions available for your state. Please check back later or contact the administrator.</p>
+      <button pButton label="Go Back" icon="pi pi-arrow-left" (click)="goBack()" class="clear-button"></button>
+    </div>
+
+    <!-- Quick Alphabet Navigation -->
+    <div *ngIf="!loading && filteredStates.length > 5" class="alphabet-nav">
+      <div class="alphabet-scroll">
+        <button 
+          *ngFor="let letter of alphabetLetters"
+          class="letter-button"
+          [class.active]="hasStateStartingWith(letter)"
+          (click)="scrollToLetter(letter)"
+          [disabled]="!hasStateStartingWith(letter)">
+          {{ letter }}
+        </button>
       </div>
     </div>
   </div>

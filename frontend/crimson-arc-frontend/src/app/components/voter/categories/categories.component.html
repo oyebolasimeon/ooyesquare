@@ -4,7 +4,7 @@
     <div class="header">
       <div class="header-content">
         <div class="logo-section">
-          <i class="pi pi-shield" style="font-size: 2rem; color: #F8FAFC;"></i>
+          <img src="assets/logo.png" alt="STCOGA Logo" class="header-logo" />
           <span class="logo-text">STCOGA DECIDES</span>
         </div>
         <div class="user-section">
@@ -17,10 +17,10 @@
     <div class="container">
       <div class="welcome-section">
         <p-avatar 
-          [label]="voter?.firstName?.charAt(0) || 'V'" 
+          [image]="avatarUrl" 
           size="xlarge" 
           shape="circle"
-          [style]="{'background-color':'#4F46E5', 'color': '#ffffff', 'font-size': '2rem'}">
+          [style]="{'width': '120px', 'height': '120px'}">
         </p-avatar>
         <h1>Hello, {{ voter?.firstName }}!</h1>
         <p class="welcome-subtitle">Welcome to STCOGA's Online Voting System</p>

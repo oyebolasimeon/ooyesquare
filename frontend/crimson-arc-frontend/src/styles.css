@@ -1,7 +1,76 @@
 /* Global Styles with STCOGA Theme */
 
+/* Import Animations */
+@import './styles/animations.css';
+
+/* Import Dialog Styles */
+@import './styles/dialogs.css';
+
+/* Import PrimeNG Overrides */
+@import './styles/primeng-overrides.css';
+
+/* Import Admin Layout Styles */
+@import './styles/admin-layout.css';
+
 /* Import New Science Font (using similar web-safe alternative if not available) */
 @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&display=swap');
+
+/* Bootstrap Modal Overrides */
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1050;
+}
+
+.modal {
+  z-index: 1055;
+}
+
+.modal-dialog {
+  margin: 1.75rem auto;
+}
+
+.modal-content {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.modal-header {
+  border-bottom: none;
+  border-radius: 16px 16px 0 0;
+}
+
+.modal-footer {
+  border-top: 1px solid #e2e8f0;
+  border-radius: 0 0 16px 16px;
+}
+
+/* Ensure PrimeNG dropdowns appear above modal content */
+.modal .p-dropdown-panel,
+.modal .p-connected-overlay {
+  z-index: 10000 !important;
+}
+
+/* Override any PrimeNG overlay z-index issues in modals */
+.p-component-overlay-enter {
+  z-index: 9999 !important;
+}
+
+/* Ensure modal body doesn't clip dropdown panels */
+.modal-body {
+  overflow: visible !important;
+}
+
+/* Ensure modal content doesn't clip dropdowns */
+.modal-content {
+  overflow: visible !important;
+}
+
+/* But keep modal dialog scrollable if needed */
+.modal-dialog {
+  overflow-y: auto;
+  max-height: 90vh;
+}
 
 :root {
   /* STCOGA Brand Colors from Logo */
@@ -50,6 +119,8 @@ body {
   color: var(--text-primary);
   background: var(--bg-light);
   line-height: 1.6;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -106,9 +177,9 @@ h1, h2, h3, h4, h5, h6 {
 /* Background Pattern with STCOGA Logo */
 .page-background {
   min-height: 100vh;
-    background-image: 
-      linear-gradient(rgba(248, 250, 252, 0.97), rgba(248, 250, 252, 0.95)),
-      url('/assets/bg-image.jpeg');
+  background-image: 
+    linear-gradient(rgba(248, 250, 252, 0.97), rgba(248, 250, 252, 0.95)),
+    url('/assets/bg-image.jpeg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;

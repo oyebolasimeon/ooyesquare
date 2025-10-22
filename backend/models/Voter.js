@@ -3,8 +3,9 @@ const mongoose = require('mongoose');
 const voterSchema = new mongoose.Schema({
   email: {
     type: String,
-    required: true,
+    required: false,
     unique: true,
+    sparse: true,
     lowercase: true,
     trim: true
   },
@@ -20,9 +21,15 @@ const voterSchema = new mongoose.Schema({
   },
   maidenName: {
     type: String,
+    required: true,
     trim: true
   },
   lastName: {
+    type: String,
+    required: false,
+    trim: true
+  },
+  state: {
     type: String,
     required: true,
     trim: true
@@ -42,6 +49,13 @@ const voterSchema = new mongoose.Schema({
   },
   lastLogin: {
     type: Date
+  },
+  activeSession: {
+    token: { type: String },
+    deviceInfo: { type: String },
+    ipAddress: { type: String },
+    loginTime: { type: Date },
+    lastActivity: { type: Date }
   },
   createdAt: {
     type: Date,

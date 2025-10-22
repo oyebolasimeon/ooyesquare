@@ -3,6 +3,7 @@ const Voter = require('../models/Voter');
 const Position = require('../models/Position');
 const Contestant = require('../models/Contestant');
 const ElectionSettings = require('../models/ElectionSettings');
+const { getClientIP, geolocateIP } = require('../utils/ipGeolocation');
 
 // @desc    Submit votes
 // @route   POST /api/votes/submit
@@ -27,26 +28,21 @@ const submitVotes = async (req, res) => {
       });
     }
 
-    // Check if election is ongoing for this category
-    const electionFilter = { category, isActive: true };
-    if (category === 'State' && state) {
-      electionFilter.state = state;
-    }
-
-    const election = await ElectionSettings.findOne(electionFilter);
+    // Check if election is ongoing (general election settings)
+    const election = await ElectionSettings.findOne();
     
     if (!election) {
-      return res.status(400).json({ message: 'Election not configured for this category' });
+      return res.status(400).json({ message: 'Election not configured' });
     }
 
-    const now = new Date();
-    if (now < election.startDate) {
-      return res.status(400).json({ message: 'Election has not started yet' });
+    // Only check if election is enabled (ignore dates if enabled)
+    if (!election.isActive) {
+      return res.status(400).json({ message: 'Election is currently disabled' });
     }
 
-    if (now > election.endDate) {
-      return res.status(400).json({ message: 'Election has ended' });
-    }
+    // Get voter's IP address and geolocation
+    const ipAddress = getClientIP(req);
+    const location = await geolocateIP(ipAddress);
 
     // Process votes
     const voteRecords = [];
@@ -88,13 +84,15 @@ const submitVotes = async (req, res) => {
         contestantUpdates.push(contestantId);
       }
 
-      // Create vote record
+      // Create vote record with IP and location
       voteRecords.push({
         voter: voterId,
         position: positionId,
         contestant: contestantId || null,
         category,
-        state: category === 'State' ? state : undefined
+        state: category === 'State' ? state : undefined,
+        ipAddress,
+        location
       });
     }
 

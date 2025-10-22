@@ -1,105 +1,97 @@
-<div class="page-background">
-  <div class="page-content">
-    <!-- Header -->
-    <div class="header">
-      <div class="header-content">
-        <div class="logo-section">
-          <button pButton icon="pi pi-arrow-left" (click)="goToDashboard()" class="p-button-text back-btn"></button>
-          <i class="pi pi-users" style="font-size: 2rem;"></i>
-          <span class="logo-text">Manage Contestants</span>
+<div class="admin-layout">
+  <app-admin-sidebar #sidebar [activeRoute]="'contestants'"></app-admin-sidebar>
+  
+  <div class="main-content">
+    <app-admin-topbar [title]="'Manage Contestants'" [icon]="'pi-users'" (toggleMenu)="sidebar.toggleMobileMenu()"></app-admin-topbar>
+    
+    <div class="content-area">
+      <div class="contestants-container">
+        <div class="toolbar">
+          <div class="search-container">
+            <span class="p-input-icon-left search-box">
+              <i class="pi pi-search"></i>
+              <input type="text" 
+                     pInputText 
+                     [(ngModel)]="searchText" 
+                     (input)="filterContestants()" 
+                     placeholder="Search by name, position, category..."
+                     class="search-input" />
+              <i class="pi pi-times clear-icon" 
+                 *ngIf="searchText" 
+                 (click)="clearSearch()"
+                 pTooltip="Clear search"></i>
+            </span>
+            <div class="results-info" *ngIf="searchText">
+              <span>{{ filteredContestants.length }} of {{ contestants.length }} contestants</span>
+            </div>
+          </div>
+          <button pButton label="New Contestant" icon="pi pi-plus" (click)="openNewDialog()" class="add-btn"></button>
         </div>
-        <div class="user-section">
-          <button pButton icon="pi pi-sign-out" (click)="logout()" class="p-button-text logout-btn" label="Logout"></button>
-        </div>
+
+        <!-- Contestants Table -->
+        <p-card>
+          <p-table [value]="filteredContestants" [loading]="loading" [paginator]="true" [rows]="rowsPerPage" 
+                   [rowsPerPageOptions]="rowsPerPageOptions" [showCurrentPageReport]="true"
+                   currentPageReportTemplate="Showing {first} to {last} of {totalRecords} contestants"
+                   responsiveLayout="scroll" styleClass="p-datatable-striped">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Contestant Name</th>
+                <th>Position</th>
+                <th>Category</th>
+                <th>Bio</th>
+                <th>Actions</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-contestant>
+              <tr>
+                <td>
+                  {{ contestant.firstName }} {{ contestant.lastName }}
+                  <span *ngIf="contestant.maidenName" class="maiden-name">({{ contestant.maidenName }})</span>
+                </td>
+                <td>{{ getPositionName(contestant) }}</td>
+                <td>
+                  <p-tag [value]="getPositionCategory(contestant)" 
+                         [severity]="getPositionCategory(contestant) === 'National' ? 'info' : 'warn'"></p-tag>
+                </td>
+                <td>
+                  <div class="bio-cell">{{ contestant.bio || '-' }}</div>
+                </td>
+                <td class="action-buttons">
+                  <button pButton 
+                          type="button"
+                          icon="pi pi-pencil" 
+                          (click)="openEditDialog(contestant)" 
+                          class="p-button-rounded p-button-text p-button-sm edit-btn" 
+                          pTooltip="Edit"
+                          tooltipPosition="top"></button>
+                  <button pButton 
+                          type="button"
+                          icon="pi pi-trash" 
+                          (click)="deleteContestant(contestant)" 
+                          class="p-button-rounded p-button-text p-button-sm delete-btn" 
+                          pTooltip="Delete"
+                          tooltipPosition="top"></button>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="5" class="empty-message">
+                  <div class="empty-state">
+                    <i class="pi pi-inbox" style="font-size: 3rem; color: #94A3B8;"></i>
+                    <p>No contestants found. Add your first contestant to get started.</p>
+                  </div>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </p-card>
       </div>
     </div>
-
-    <!-- Main Content -->
-    <div class="contestants-container">
-      <div class="toolbar">
-        <button pButton label="New Contestant" icon="pi pi-plus" (click)="openNewDialog()" class="add-btn"></button>
-      </div>
-
-      <!-- Contestants Table -->
-      <p-card>
-        <p-table [value]="contestants" [loading]="loading" [paginator]="true" [rows]="10" 
-                 responsiveLayout="scroll" styleClass="p-datatable-striped">
-          <ng-template pTemplate="header">
-            <tr>
-              <th>Contestant Name</th>
-              <th>Position</th>
-              <th>Category</th>
-              <th>Bio</th>
-              <th>Actions</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-contestant>
-            <tr>
-              <td>{{ contestant.name }}</td>
-              <td>{{ getPositionName(contestant.positionId) }}</td>
-              <td>
-                <span [class]="'category-badge ' + getPositionCategory(contestant.positionId).toLowerCase()">
-                  {{ getPositionCategory(contestant.positionId) }}
-                </span>
-              </td>
-              <td>
-                <div class="bio-cell">{{ contestant.bio || '-' }}</div>
-              </td>
-              <td>
-                <button pButton icon="pi pi-pencil" (click)="openEditDialog(contestant)" 
-                        class="p-button-rounded p-button-text edit-btn" pTooltip="Edit"></button>
-                <button pButton icon="pi pi-trash" (click)="deleteContestant(contestant)" 
-                        class="p-button-rounded p-button-text delete-btn" pTooltip="Delete"></button>
-              </td>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="emptymessage">
-            <tr>
-              <td colspan="5" class="empty-message">
-                <div class="empty-state">
-                  <i class="pi pi-inbox" style="font-size: 3rem; color: #94A3B8;"></i>
-                  <p>No contestants found. Add your first contestant to get started.</p>
-                </div>
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
-      </p-card>
-    </div>
-
-    <!-- Create/Edit Dialog -->
-    <p-dialog [(visible)]="displayDialog" [header]="isEditMode ? 'Edit Contestant' : 'Create Contestant'" 
-              [modal]="true" [style]="{width: '600px'}" [draggable]="false" [resizable]="false">
-      <div class="form-grid">
-        <div class="form-field">
-          <label for="name">Contestant Name *</label>
-          <input pInputText id="name" [ngModel]="currentContestant.name" (ngModelChange)="currentContestant.name = $event" placeholder="Full name of contestant" />
-        </div>
-
-        <div class="form-field">
-          <label for="position">Position *</label>
-          <p-dropdown id="position" [ngModel]="currentContestant.positionId" (ngModelChange)="currentContestant.positionId = $event" [options]="positionOptions" 
-                      placeholder="Select Position" optionLabel="label" optionValue="value" [filter]="true"></p-dropdown>
-        </div>
-
-        <div class="form-field">
-          <label for="bio">Bio</label>
-          <textarea pInputText id="bio" [ngModel]="currentContestant.bio" (ngModelChange)="currentContestant.bio = $event" 
-                    placeholder="Brief biography of the contestant" rows="4" style="width: 100%; resize: vertical;"></textarea>
-        </div>
-      </div>
-
-      <ng-template pTemplate="footer">
-        <button pButton label="Cancel" icon="pi pi-times" (click)="hideDialog()" class="p-button-text"></button>
-        <button pButton label="Save" icon="pi pi-check" (click)="saveContestant()" class="save-btn"></button>
-      </ng-template>
-    </p-dialog>
-
-    <!-- Toast Messages -->
-    <p-toast></p-toast>
-
-    <!-- Confirmation Dialog -->
-    <p-confirmDialog></p-confirmDialog>
   </div>
-</div>
 
+  <!-- Toast Messages -->
+  <p-toast></p-toast>
+
+</div>

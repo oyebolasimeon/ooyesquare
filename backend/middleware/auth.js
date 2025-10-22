@@ -27,6 +27,20 @@ const protect = async (req, res, next) => {
       } else {
         req.user = await Voter.findById(decoded.id);
         req.userType = 'voter';
+
+        // Validate session token for voters
+        if (req.user && req.user.activeSession) {
+          if (req.user.activeSession.token !== token) {
+            return res.status(401).json({ 
+              message: 'Session expired. You have been logged out because this account was accessed from another device.',
+              code: 'SESSION_REPLACED'
+            });
+          }
+
+          // Update last activity
+          req.user.activeSession.lastActivity = new Date();
+          await req.user.save();
+        }
       }
 
       if (!req.user) {

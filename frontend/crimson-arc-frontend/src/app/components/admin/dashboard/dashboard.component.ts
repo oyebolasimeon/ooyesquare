@@ -6,13 +6,14 @@ import { ButtonModule } from 'primeng/button';
 import { ChartModule } from 'primeng/chart';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
+import { AvatarModule } from 'primeng/avatar';
 import { ApiService } from '../../../services/api.service';
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, CardModule, ButtonModule, ChartModule, TableModule, TagModule],
+  imports: [CommonModule, CardModule, ButtonModule, ChartModule, TableModule, TagModule, AvatarModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -27,6 +28,9 @@ export class DashboardComponent implements OnInit {
   recentActivities: any[] = [];
   electionStatus: any = null;
   loading = true;
+  adminAvatarUrl = '';
+  adminName = 'Admin';
+  isMobileMenuOpen = false;
 
   constructor(
     private apiService: ApiService,
@@ -36,6 +40,19 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.loadDashboardData();
+    this.generateAdminAvatar();
+  }
+
+  generateAdminAvatar() {
+    const currentUser = this.authService.currentUserValue;
+    if (currentUser && 'username' in currentUser) {
+      const username = currentUser.username;
+      this.adminName = (typeof username === 'string' ? username : 'Admin') || 'Admin';
+      const seed = this.adminName.toLowerCase().replace(/\s/g, '');
+      this.adminAvatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`;
+    } else {
+      this.adminAvatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=admin`;
+    }
   }
 
   loadDashboardData() {
@@ -66,6 +83,14 @@ export class DashboardComponent implements OnInit {
 
   navigateTo(route: string) {
     this.router.navigate([`/admin/${route}`]);
+    // Close mobile menu after navigation
+    if (this.isMobileMenuOpen) {
+      this.toggleMobileMenu();
+    }
+  }
+
+  toggleMobileMenu() {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }
 }
 

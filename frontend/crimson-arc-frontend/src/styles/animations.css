@@ -1,0 +1,304 @@
+/* Smooth Animations and Transitions */
+
+/* Button Hover Effects */
+button, .p-button {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+button:hover:not(:disabled), .p-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
+}
+
+button:active:not(:disabled), .p-button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Card Animations */
+.p-card, p-card, [class*="card"] {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.p-card:hover, p-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Slide In From Right */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.slide-in-right {
+  animation: slideInRight 0.4s ease-out;
+}
+
+/* Slide In From Left */
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.4s ease-out;
+}
+
+/* Scale In Animation */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.scale-in {
+  animation: scaleIn 0.3s ease-out;
+}
+
+/* Bounce Animation */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.bounce {
+  animation: bounce 0.6s ease-in-out;
+}
+
+/* Pulse Animation */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.pulse {
+  animation: pulse 1s ease-in-out infinite;
+}
+
+/* Loading Spinner */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* Shimmer Effect for Loading */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0) 0%, 
+    rgba(255, 255, 255, 0.3) 50%, 
+    rgba(255, 255, 255, 0) 100%);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Stagger Animation for Lists */
+[class*="list"] > * {
+  animation: fadeInUp 0.4s ease-out;
+  animation-fill-mode: both;
+}
+
+[class*="list"] > *:nth-child(1) { animation-delay: 0.05s; }
+[class*="list"] > *:nth-child(2) { animation-delay: 0.1s; }
+[class*="list"] > *:nth-child(3) { animation-delay: 0.15s; }
+[class*="list"] > *:nth-child(4) { animation-delay: 0.2s; }
+[class*="list"] > *:nth-child(5) { animation-delay: 0.25s; }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Smooth Transitions for All Interactive Elements */
+a, .nav-item, .menu-item {
+  transition: all 0.2s ease-in-out !important;
+}
+
+/* Input Focus Animation */
+input:focus, textarea:focus, select:focus {
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1) !important;
+}
+
+/* Dialog/Modal Animations */
+.p-dialog {
+  animation: scaleIn 0.3s ease-out !important;
+}
+
+.p-dialog-mask {
+  animation: fadeIn 0.3s ease-out !important;
+}
+
+/* Toast Notifications */
+.p-toast-message {
+  animation: slideInRight 0.3s ease-out !important;
+}
+
+/* Table Row Hover */
+.p-datatable .p-datatable-tbody > tr {
+  transition: all 0.2s ease-in-out !important;
+}
+
+.p-datatable .p-datatable-tbody > tr:hover {
+  transform: scale(1.01);
+}
+
+/* Sidebar Navigation */
+.nav-item {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.nav-item:hover {
+  transform: translateX(5px);
+}
+
+/* Tag Animation */
+.p-tag {
+  transition: all 0.2s ease-in-out !important;
+}
+
+.p-tag:hover {
+  transform: scale(1.05);
+}
+
+/* Progress Bar Animation */
+@keyframes progressBar {
+  from {
+    width: 0;
+  }
+}
+
+[class*="progress"], [class*="bar"] {
+  animation: progressBar 1s ease-out;
+}
+
+/* Icon Rotation on Hover */
+.icon-rotate:hover {
+  transition: transform 0.3s ease-in-out;
+  transform: rotate(360deg);
+}
+
+/* Glow Effect */
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(30, 64, 175, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(30, 64, 175, 0.6);
+  }
+}
+
+.glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+/* Slide Down for Dropdown */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.p-dropdown-panel {
+  animation: slideDown 0.2s ease-out !important;
+}
+
+/* Smooth Page Transitions */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.4s ease-out;
+}
+
+.page-transition-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s ease-in;
+}
+
+/* Reduce Motion for Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+

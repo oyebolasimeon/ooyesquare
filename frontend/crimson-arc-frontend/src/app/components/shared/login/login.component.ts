@@ -2,7 +2,9 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from '../../../services/auth.service';
+import { ActiveSessionModalComponent } from './active-session-modal.component';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +17,7 @@ export class LoginComponent {
   loginType: 'voter' | 'admin' = 'voter';
   
   // Voter credentials
-  voterEmail = '';
+  voterMaidenName = '';
   voterPhone = '';
   
   // Admin credentials
@@ -27,7 +29,8 @@ export class LoginComponent {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private modalService: NgbModal
   ) {}
 
   switchLoginType(type: 'voter' | 'admin') {
@@ -39,7 +42,7 @@ export class LoginComponent {
     this.error = '';
     this.loading = true;
 
-    this.authService.voterLogin(this.voterEmail, this.voterPhone)
+    this.authService.voterLogin(this.voterMaidenName, this.voterPhone)
       .subscribe({
         next: (user) => {
           this.loading = false;
@@ -47,7 +50,21 @@ export class LoginComponent {
         },
         error: (err) => {
           this.loading = false;
-          this.error = err.error?.message || 'Login failed. Please check your credentials.';
+          
+          // Check if error is due to active session (403)
+          if (err.status === 403 && err.error?.sessionInfo) {
+            // Show active session modal
+            const modalRef = this.modalService.open(ActiveSessionModalComponent, {
+              centered: true,
+              backdrop: 'static',
+              size: 'lg'
+            });
+            modalRef.componentInstance.message = err.error.message;
+            modalRef.componentInstance.sessionInfo = err.error.sessionInfo;
+          } else {
+            // Show regular error message
+            this.error = err.error?.message || 'Login failed. Please check your credentials.';
+          }
         }
       });
   }

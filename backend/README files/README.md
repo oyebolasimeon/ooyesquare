@@ -2,7 +2,7 @@
 
 ## 🎯 Project Overview
 
-A comprehensive full-stack voting system for **STCOGA (Scripture Truth Christian Overcomers Church of God Assembly)** National Executive Council Elections. The system includes separate interfaces for administrators to manage elections and voters to cast their votes.
+A comprehensive full-stack voting system for **STCOGA ** National Executive Council Elections. The system includes separate interfaces for administrators to manage elections and voters to cast their votes.
 
 ## ✨ Features
 
@@ -436,7 +436,7 @@ ISC
 
 ## 👥 Credits
 
-Built for STCOGA (Scripture Truth Christian Overcomers Church of God Assembly)
+Built for STCOGA - Developed by Simeon Oyebola (Crimsom Arc Ltd) 
 
 ---
 

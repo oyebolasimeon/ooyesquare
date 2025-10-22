@@ -5,57 +5,55 @@ import { Router } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
-import { DialogModule } from 'primeng/dialog';
-import { InputTextModule } from 'primeng/inputtext';
-import { DropdownModule } from 'primeng/dropdown';
 import { ToastModule } from 'primeng/toast';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { MessageService, ConfirmationService } from 'primeng/api';
+import { TagModule } from 'primeng/tag';
+import { TooltipModule } from 'primeng/tooltip';
+import { InputTextModule } from 'primeng/inputtext';
+import { MessageService } from 'primeng/api';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { DeleteConfirmationModalComponent } from '../shared/delete-confirmation-modal.component';
 import { ApiService } from '../../../services/api.service';
 import { AuthService } from '../../../services/auth.service';
 import { Contestant, Position } from '../../../models/models';
+import { AdminSidebarComponent } from '../shared/admin-sidebar.component';
+import { AdminTopbarComponent } from '../shared/admin-topbar.component';
+import { ContestantModalComponent } from './contestant-modal.component';
 
 @Component({
   selector: 'app-contestants',
   standalone: true,
   imports: [
-    CommonModule, 
-    FormsModule, 
+    CommonModule,
+    FormsModule,
     CardModule, 
     ButtonModule, 
     TableModule, 
-    DialogModule, 
-    InputTextModule, 
-    DropdownModule,
     ToastModule,
-    ConfirmDialogModule
+    TagModule,
+    TooltipModule,
+    InputTextModule,
+    AdminSidebarComponent,
+    AdminTopbarComponent
   ],
-  providers: [MessageService, ConfirmationService],
+  providers: [MessageService],
   templateUrl: './contestants.component.html',
   styleUrls: ['./contestants.component.css']
 })
 export class ContestantsComponent implements OnInit {
   contestants: Contestant[] = [];
+  filteredContestants: Contestant[] = [];
   positions: Position[] = [];
   loading = true;
-  displayDialog = false;
-  isEditMode = false;
-
-  // Form data
-  currentContestant: any = {
-    name: '',
-    positionId: '',
-    bio: ''
-  };
-
-  positionOptions: any[] = [];
+  searchText: string = '';
+  rowsPerPage: number = 10;
+  rowsPerPageOptions: number[] = [10, 25, 50, 100];
 
   constructor(
     private apiService: ApiService,
     private authService: AuthService,
     private router: Router,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService
+    private modalService: NgbModal
   ) {}
 
   ngOnInit() {
@@ -69,14 +67,8 @@ export class ContestantsComponent implements OnInit {
       this.apiService.getPositions().toPromise()
     ]).then(([contestants, positions]) => {
       this.contestants = contestants || [];
+      this.filteredContestants = contestants || [];
       this.positions = positions || [];
-      
-      // Create position options with formatted labels
-      this.positionOptions = this.positions.map(p => ({
-        label: p.state ? `${p.name} (${p.state})` : p.name,
-        value: p._id
-      }));
-      
       this.loading = false;
     }).catch(error => {
       console.error('Error loading data:', error);
@@ -89,104 +81,108 @@ export class ContestantsComponent implements OnInit {
     });
   }
 
-  getPositionName(positionId: string): string {
-    const position = this.positions.find(p => p._id === positionId);
-    if (!position) return 'Unknown Position';
-    return position.state ? `${position.name} (${position.state})` : position.name;
+  filterContestants() {
+    if (!this.searchText.trim()) {
+      this.filteredContestants = this.contestants;
+      return;
+    }
+
+    const searchLower = this.searchText.toLowerCase().trim();
+    this.filteredContestants = this.contestants.filter(contestant => {
+      const fullName = `${contestant.firstName} ${contestant.lastName}`.toLowerCase();
+      const positionTitle = typeof contestant.position === 'object' ? 
+        (contestant.position?.title?.toLowerCase() || '') : '';
+      const positionCategory = typeof contestant.position === 'object' ? 
+        (contestant.position?.category?.toLowerCase() || '') : '';
+
+      return (
+        contestant.firstName?.toLowerCase().includes(searchLower) ||
+        contestant.lastName?.toLowerCase().includes(searchLower) ||
+        contestant.maidenName?.toLowerCase().includes(searchLower) ||
+        fullName.includes(searchLower) ||
+        positionTitle.includes(searchLower) ||
+        positionCategory.includes(searchLower)
+      );
+    });
   }
 
-  getPositionCategory(positionId: string): string {
+  clearSearch() {
+    this.searchText = '';
+    this.filteredContestants = this.contestants;
+  }
+
+  getPositionName(contestant: Contestant): string {
+    // Check if position is populated (object) or just an ID (string)
+    if (typeof contestant.position === 'object' && contestant.position) {
+      const pos = contestant.position as Position;
+      const posName = pos.title || pos.name || 'Unknown Position';
+      return pos.state ? `${posName} (${pos.state})` : posName;
+    }
+    // Fallback to looking up by ID
+    const positionId = contestant.position as string || contestant.positionId;
+    const position = this.positions.find(p => p._id === positionId);
+    if (!position) return 'Unknown Position';
+    const posName = position.name || position.title || 'Unknown Position';
+    return position.state ? `${posName} (${position.state})` : posName;
+  }
+
+  getPositionCategory(contestant: Contestant): string {
+    // Check if position is populated (object) or just an ID (string)
+    if (typeof contestant.position === 'object' && contestant.position) {
+      const pos = contestant.position as Position;
+      return pos.category || 'Unknown';
+    }
+    // Fallback to looking up by ID
+    const positionId = contestant.position as string || contestant.positionId;
     const position = this.positions.find(p => p._id === positionId);
     return position?.category || 'Unknown';
   }
 
   openNewDialog() {
-    this.isEditMode = false;
-    this.currentContestant = {
-      name: '',
-      positionId: '',
-      bio: ''
-    };
-    this.displayDialog = true;
+    const modalRef = this.modalService.open(ContestantModalComponent, {
+      size: 'lg',
+      centered: true,
+      backdrop: 'static'
+    });
+
+    modalRef.componentInstance.positions = this.positions;
+    
+    modalRef.componentInstance.reload.subscribe((val: boolean) => {
+      if (val) {
+        this.loadData();
+        modalRef.dismiss();
+      }
+    });
   }
 
   openEditDialog(contestant: Contestant) {
-    this.isEditMode = true;
-    this.currentContestant = { ...contestant };
-    this.displayDialog = true;
-  }
+    const modalRef = this.modalService.open(ContestantModalComponent, {
+      size: 'lg',
+      centered: true,
+      backdrop: 'static'
+    });
 
-  hideDialog() {
-    this.displayDialog = false;
-    this.currentContestant = {
-      name: '',
-      positionId: '',
-      bio: ''
-    };
-  }
-
-  saveContestant() {
-    if (!this.currentContestant.name || !this.currentContestant.positionId) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Warning',
-        detail: 'Please fill in all required fields'
-      });
-      return;
-    }
-
-    if (this.isEditMode && this.currentContestant._id) {
-      // Update existing contestant
-      this.apiService.updateContestant(this.currentContestant._id, this.currentContestant).subscribe({
-        next: () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Contestant updated successfully'
-          });
-          this.hideDialog();
-          this.loadData();
-        },
-        error: (error) => {
-          console.error('Error updating contestant:', error);
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Failed to update contestant'
-          });
-        }
-      });
-    } else {
-      // Create new contestant
-      this.apiService.createContestant(this.currentContestant).subscribe({
-        next: () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Contestant created successfully'
-          });
-          this.hideDialog();
-          this.loadData();
-        },
-        error: (error) => {
-          console.error('Error creating contestant:', error);
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Failed to create contestant'
-          });
-        }
-      });
-    }
+    modalRef.componentInstance.contestant = contestant;
+    modalRef.componentInstance.positions = this.positions;
+    
+    modalRef.componentInstance.reload.subscribe((val: boolean) => {
+      if (val) {
+        this.loadData();
+        modalRef.dismiss();
+      }
+    });
   }
 
   deleteContestant(contestant: Contestant) {
-    this.confirmationService.confirm({
-      message: `Are you sure you want to delete contestant "${contestant.name}"?`,
-      header: 'Confirm Deletion',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        if (contestant._id) {
+    const fullName = `${contestant.firstName} ${contestant.lastName}`;
+    const modalRef = this.modalService.open(DeleteConfirmationModalComponent, {
+      centered: true
+    });
+    modalRef.componentInstance.message = `Are you sure you want to delete contestant "${fullName}"?`;
+    
+    modalRef.result.then(
+      (confirmed) => {
+        if (confirmed && contestant._id) {
           this.apiService.deleteContestant(contestant._id).subscribe({
             next: () => {
               this.messageService.add({
@@ -206,8 +202,9 @@ export class ContestantsComponent implements OnInit {
             }
           });
         }
-      }
-    });
+      },
+      () => {} // Dismissed
+    );
   }
 
   logout() {

@@ -24,6 +24,20 @@ const voteSchema = new mongoose.Schema({
   state: {
     type: String
   },
+  ipAddress: {
+    type: String,
+    required: false
+  },
+  location: {
+    city: String,
+    region: String,
+    country: String,
+    timezone: String,
+    coordinates: {
+      latitude: Number,
+      longitude: Number
+    }
+  },
   timestamp: {
     type: Date,
     default: Date.now

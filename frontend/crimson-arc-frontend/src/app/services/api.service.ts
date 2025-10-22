@@ -27,6 +27,16 @@ export class ApiService {
     return this.http.get<string[]>(`${this.apiUrl}/positions/states/list`);
   }
 
+  // Get states that have positions
+  getStatesWithPositions(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/positions/states/available`);
+  }
+
+  // Get available states for voter based on their state
+  getAvailableStates(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/voters/available-states`, { headers: this.getHeaders() });
+  }
+
   // Positions
   getPositions(category?: string, state?: string): Observable<Position[]> {
     let url = `${this.apiUrl}/positions`;
@@ -105,6 +115,14 @@ export class ApiService {
     return this.uploadVoters(file);
   }
 
+  resendVoterEmail(voterId: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/voters/${voterId}/resend-email`, {}, { headers: this.getHeaders() });
+  }
+
+  resendAllVotersEmails(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/voters/resend-all-emails`, {}, { headers: this.getHeaders() });
+  }
+
   // Voting
   submitVotes(votes: VoteSubmission[], category: string, state?: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/votes/submit`, { votes, category, state }, { headers: this.getHeaders() });
@@ -118,30 +136,17 @@ export class ApiService {
     return this.http.get<ElectionSettings[]>(`${this.apiUrl}/votes/available-elections`, { headers: this.getHeaders() });
   }
 
-  // Elections
-  getElectionSettings(category?: string, state?: string): Observable<ElectionSettings[]> {
-    let url = `${this.apiUrl}/elections`;
-    const params: string[] = [];
-    if (category) params.push(`category=${category}`);
-    if (state) params.push(`state=${state}`);
-    if (params.length) url += `?${params.join('&')}`;
-    return this.http.get<ElectionSettings[]>(url, { headers: this.getHeaders() });
-  }
-
-  createElection(election: Partial<ElectionSettings>): Observable<ElectionSettings> {
-    return this.http.post<ElectionSettings>(`${this.apiUrl}/elections`, election, { headers: this.getHeaders() });
-  }
-
-  updateElection(id: string, election: Partial<ElectionSettings>): Observable<ElectionSettings> {
-    return this.http.put<ElectionSettings>(`${this.apiUrl}/elections/${id}`, election, { headers: this.getHeaders() });
+  // Elections - General Settings
+  getElectionSettings(): Observable<ElectionSettings> {
+    return this.http.get<ElectionSettings>(`${this.apiUrl}/elections`, { headers: this.getHeaders() });
   }
 
   updateElectionSettings(settings: Partial<ElectionSettings>): Observable<ElectionSettings> {
-    // If settings has an ID, update it, otherwise create new
-    if (settings._id) {
-      return this.updateElection(settings._id, settings);
-    }
-    return this.createElection(settings);
+    return this.http.put<ElectionSettings>(`${this.apiUrl}/elections`, settings, { headers: this.getHeaders() });
+  }
+
+  getElectionStatus(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/elections/status`);
   }
 
   // Results

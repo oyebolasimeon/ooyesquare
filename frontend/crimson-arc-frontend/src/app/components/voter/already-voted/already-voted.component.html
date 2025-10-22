@@ -1,0 +1,84 @@
+<div class="already-voted-page">
+  <div class="background-pattern"></div>
+  
+  <div class="content-container">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo-section">
+        <img src="assets/logo.png" alt="STCOGA Logo" class="header-logo" />
+        <span class="logo-text">STCOGA DECIDES</span>
+      </div>
+    </div>
+
+    <!-- Main Content Card -->
+    <div class="main-card">
+      <!-- Success Icon with Animation -->
+      <div class="icon-container">
+        <div class="success-circle">
+          <div class="checkmark-container">
+            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+              <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+              <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Message -->
+      <div class="message-section">
+        <h1 class="title">Vote Already Submitted!</h1>
+        <p class="subtitle">
+          You have already cast your vote for the <strong>{{ category }} {{ state ? '(' + state + ')' : '' }} Election</strong>
+        </p>
+        
+        <div class="info-box">
+          <i class="pi pi-info-circle"></i>
+          <div class="info-content">
+            <p class="info-title">Thank you for participating!</p>
+            <p class="info-text">
+              Your vote has been securely recorded and counted. To maintain election integrity, 
+              each voter is allowed only one vote per election category.
+            </p>
+          </div>
+        </div>
+
+        <!-- Status Cards -->
+        <div class="status-cards">
+          <div class="status-card completed">
+            <i class="pi pi-check-circle"></i>
+            <div class="status-content">
+              <span class="status-label">Vote Status</span>
+              <span class="status-value">Completed</span>
+            </div>
+          </div>
+          <div class="status-card secure">
+            <i class="pi pi-shield"></i>
+            <div class="status-content">
+              <span class="status-label">Security</span>
+              <span class="status-value">Verified</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button pButton 
+                  label="Return to Dashboard" 
+                  icon="pi pi-home" 
+                  (click)="goBack()"
+                  class="primary-button"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Note -->
+    <div class="footer-note">
+      <p>
+        <i class="pi pi-lock"></i>
+        Your vote is confidential and secure
+      </p>
+      <p>Developed by Crimson Arc Ltd.</p>
+    </div>
+  </div>
+</div>
+

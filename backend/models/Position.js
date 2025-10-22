@@ -3,7 +3,10 @@ const mongoose = require('mongoose');
 const positionSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: true,
+    trim: true
+  },
+  name: {
+    type: String,
     trim: true
   },
   description: {
@@ -38,6 +41,20 @@ const positionSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
+});
+
+// Virtual to ensure either title or name is present
+positionSchema.pre('validate', function(next) {
+  if (!this.title && !this.name) {
+    return next(new Error('Either title or name is required'));
+  }
+  // Always sync name to match title (title is the primary field)
+  if (this.title) {
+    this.name = this.title;
+  } else if (this.name && !this.title) {
+    this.title = this.name;
+  }
+  next();
 });
 
 // Index for faster queries

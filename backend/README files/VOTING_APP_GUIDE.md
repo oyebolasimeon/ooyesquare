@@ -2,7 +2,7 @@
 
 ## 🎯 Project Overview
 
-A comprehensive voting system for STCOGA (Scripture Truth Christian Overcomers Church of God Assembly) National Executive Council Elections with separate interfaces for administrators and voters.
+A comprehensive voting system for STCOGA  National Executive Council Elections with separate interfaces for administrators and voters.
 
 ## ✅ COMPLETED - Backend API (100%)
 

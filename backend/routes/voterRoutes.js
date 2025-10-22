@@ -10,9 +10,12 @@ const {
   updateVoter,
   toggleVoterStatus,
   deleteVoter,
-  uploadVotersExcel
+  uploadVotersExcel,
+  resendVoterEmail,
+  resendAllVotersEmails,
+  getAvailableStates
 } = require('../controllers/voterController');
-const { protect, adminOnly } = require('../middleware/auth');
+const { protect, adminOnly, voterOnly } = require('../middleware/auth');
 
 // Configure multer for file upload
 const storage = multer.diskStorage({
@@ -36,11 +39,14 @@ const upload = multer({
 });
 
 router.get('/stats', protect, adminOnly, getVoterStats);
+router.get('/available-states', protect, voterOnly, getAvailableStates);
 router.post('/upload', protect, adminOnly, upload.single('file'), uploadVotersExcel);
+router.post('/resend-all-emails', protect, adminOnly, resendAllVotersEmails);
 router.route('/')
   .get(protect, adminOnly, getVoters)
   .post(protect, adminOnly, createVoter);
 router.put('/:id/toggle-status', protect, adminOnly, toggleVoterStatus);
+router.post('/:id/resend-email', protect, adminOnly, resendVoterEmail);
 router.route('/:id')
   .get(protect, adminOnly, getVoterById)
   .put(protect, adminOnly, updateVoter)
