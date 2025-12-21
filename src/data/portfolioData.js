@@ -3,7 +3,7 @@ export const portfolioData = {
     name: "Oyeyemi Oluwaseyi Oyebola, PhD.",
     title: "Mathematician, Educator & Researcher",
     contact: {
-      location: "Brandon, MB, Canada",
+      location: "Manitoba, Canada",
       phone: "Available on request",
       email: "oooyeyemi@gmail.com",
       linkedin: "linkedin.com/in/oyeyemi oyebola",
