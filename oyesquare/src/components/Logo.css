@@ -1,0 +1,89 @@
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  user-select: none;
+  height: 100%;
+  padding: 0;
+  z-index: 1002;
+  background: transparent;
+  position: relative;
+  margin: 0 auto;
+}
+
+.logo-container:hover {
+  transform: scale(1.05);
+}
+
+.logo-image-wrapper {
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: fit-content;
+  height: fit-content;
+}
+
+.logo-image {
+  height: 52.5px;
+  width: auto;
+  max-width: 165px;
+  object-fit: cover;
+  object-position: center;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 3px 10px rgba(0, 77, 156, 0.4)) brightness(1.1) contrast(1.2);
+  background: transparent;
+  mix-blend-mode: normal;
+  display: block;
+  transform: scale(1.2);
+  transform-origin: center;
+}
+
+.logo-container:hover .logo-image {
+  filter: drop-shadow(0 5px 20px rgba(0, 77, 156, 0.6)) brightness(1.15) contrast(1.3);
+  transform: scale(1.25);
+}
+
+/* Responsive adjustments */
+@media (max-width: 968px) {
+  .logo-image {
+    height: 49px;
+    max-width: 147px;
+    filter: drop-shadow(0 3px 10px rgba(0, 77, 156, 0.4)) brightness(1.1) contrast(1.2);
+    transform: scale(1.2);
+  }
+  
+  .logo-container:hover .logo-image {
+    transform: scale(1.25);
+  }
+}
+
+@media (max-width: 768px) {
+  .logo-image {
+    height: 45px;
+    max-width: 135px;
+    filter: drop-shadow(0 3px 10px rgba(0, 77, 156, 0.4)) brightness(1.1) contrast(1.2);
+    transform: scale(1.2);
+  }
+  
+  .logo-container:hover .logo-image {
+    transform: scale(1.25);
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-image {
+    height: 41.5px;
+    max-width: 124px;
+    filter: drop-shadow(0 3px 10px rgba(0, 77, 156, 0.4)) brightness(1.1) contrast(1.2);
+    transform: scale(1.2);
+  }
+  
+  .logo-container:hover .logo-image {
+    transform: scale(1.25);
+  }
+}
+

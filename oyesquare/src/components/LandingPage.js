@@ -4,12 +4,11 @@ import profileImage from '../assets/profileImage.jpeg';
 import backgroundImage from '../assets/background Image.jpeg';
 import personalSelfie from '../assets/personalSelfie.jpeg';
 import tripToChina from '../assets/trip to china.jpeg';
-import tripToBankOfChina from '../assets/trip to bank of china.jpeg';
 import conferenceMoldova from '../assets/Conference at Moldova.jpeg';
 import conferenceMoldovaRepublic from '../assets/Republic of Moldova Conference.jpeg';
-import conference1 from '../assets/conference1.jpeg';
 import miniCastle from '../assets/Mini Castle Mondova.jpeg';
 import livePresentation from '../assets/live presentation shanghai.jpeg';
+import Logo from './Logo';
 import './LandingPage.css';
 
 // Carousel Component
@@ -101,6 +100,7 @@ const LandingPage = ({ onSelectPortfolio, currentView = 'home', onNavigate }) =>
   const [hoveredCard, setHoveredCard] = useState(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [bgCarouselIndex, setBgCarouselIndex] = useState(0);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const heroRef = useRef(null);
 
   // Background carousel images
@@ -123,6 +123,27 @@ const LandingPage = ({ onSelectPortfolio, currentView = 'home', onNavigate }) =>
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isMobileMenuOpen && !event.target.closest('.nav-links') && !event.target.closest('.mobile-menu-toggle')) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      document.addEventListener('click', handleClickOutside);
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
 
   // Background carousel auto-play
   useEffect(() => {
@@ -223,36 +244,70 @@ const LandingPage = ({ onSelectPortfolio, currentView = 'home', onNavigate }) =>
 
       {/* Header Navigation */}
       <header className="landing-nav">
-        <div className="nav-logo" onClick={() => onNavigate && onNavigate('home')}>
-          <span className="logo-text">OOYeyemi</span>
+        <div className="nav-logo" onClick={() => {
+          onNavigate && onNavigate('home');
+          setIsMobileMenuOpen(false);
+        }}>
+          <Logo onClick={() => {
+            onNavigate && onNavigate('home');
+            setIsMobileMenuOpen(false);
+          }} />
         </div>
-        <nav className="nav-links">
+        <button 
+          className="mobile-menu-toggle"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          aria-label="Toggle menu"
+        >
+          <span className={`hamburger-line ${isMobileMenuOpen ? 'open' : ''}`}></span>
+          <span className={`hamburger-line ${isMobileMenuOpen ? 'open' : ''}`}></span>
+          <span className={`hamburger-line ${isMobileMenuOpen ? 'open' : ''}`}></span>
+        </button>
+        {isMobileMenuOpen && (
+          <div 
+            className="mobile-menu-overlay"
+            onClick={() => setIsMobileMenuOpen(false)}
+          ></div>
+        )}
+        <nav className={`nav-links ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
           <span 
             className={`nav-link ${currentView === 'home' ? 'active' : ''}`}
-            onClick={() => onNavigate && onNavigate('home')}
+            onClick={() => {
+              onNavigate && onNavigate('home');
+              setIsMobileMenuOpen(false);
+            }}
           >
             ( Home )
           </span>
           <span 
             className={`nav-link ${currentView === 'portfolios' ? 'active' : ''}`}
-            onClick={() => onNavigate && onNavigate('portfolios')}
+            onClick={() => {
+              onNavigate && onNavigate('portfolios');
+              setIsMobileMenuOpen(false);
+            }}
           >
             Portfolios
           </span>
           <span 
             className={`nav-link ${currentView === 'about' ? 'active' : ''}`}
-            onClick={() => onNavigate && onNavigate('about')}
+            onClick={() => {
+              onNavigate && onNavigate('about');
+              setIsMobileMenuOpen(false);
+            }}
           >
             About
           </span>
           <span 
             className={`nav-link ${currentView === 'contact' ? 'active' : ''}`}
-            onClick={() => onNavigate && onNavigate('contact')}
+            onClick={() => {
+              onNavigate && onNavigate('contact');
+              setIsMobileMenuOpen(false);
+            }}
           >
             Contact
           </span>
+          <button className="nav-button mobile-cv-button">Download CV</button>
         </nav>
-        <button className="nav-button">Download CV</button>
+        <button className="nav-button desktop-cv-button">Download CV</button>
       </header>
 
       {/* Main Content - Show only on home or portfolios view */}

@@ -3,8 +3,8 @@ export const portfolioData = {
     name: "Oyeyemi Oluwaseyi Oyebola, PhD.",
     title: "Mathematician, Educator & Researcher",
     contact: {
-      location: "Brandon MB, R7A 6Y2",
-      phone: "(+1204)-720-7904",
+      location: "Available on request",
+      phone: "Available on request",
       email: "oooyeyemi@gmail.com",
       linkedin: "linkedin.com/in/oyeyemi oyebola",
       orcid: "https://orcid.org/0000-0002-8212-1492"
