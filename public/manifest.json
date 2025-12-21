@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Dr. Oyeyemi O. Oyebola",
+  "name": "Dr. Oyeyemi O. Oyebola - Mathematician, Educator & Researcher specializing in non-associative algebra, data science, and machine learning. 15+ years of teaching experience at Brandon University. Explore research, publications, and academic achievements.",
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,13 +8,13 @@
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
-      "type": "image/png",
+      "src": "logo-bg.jpeg",
+      "type": "image/jpeg",
       "sizes": "192x192"
     },
     {
-      "src": "logo512.png",
-      "type": "image/png",
+      "src": "logo-bg.jpeg",
+      "type": "image/jpeg",
       "sizes": "512x512"
     }
   ],
