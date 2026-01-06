@@ -6,7 +6,7 @@ export const portfolioData = {
       location: "Manitoba, Canada",
       phone: "Available on request",
       email: "oooyeyemi@gmail.com",
-      linkedin: "linkedin.com/in/oyeyemi oyebola",
+      linkedin: "https://www.linkedin.com/in/oyeyemi-oyebola",
       orcid: "https://orcid.org/0000-0002-8212-1492"
     },
     bio: "Dedicated academic and researcher with 15 years of extensive experience in higher education, specializing in non-associative algebra and its applications, data science, and machine learning. A passionate educator who has developed and delivered a wide range of undergraduate and postgraduate courses, fostering a rigorous and inclusive learning environment.",
